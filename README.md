@@ -21,6 +21,8 @@ gcloud projects add-iam-policy-binding $GCP_PROJECT \
 
 Generate and save key
 ```
+GCP_USER='terraform-service-user-psr' \
+GCP_PROJECT='your_project' \
 gcloud iam service-accounts keys create $HOME/service/google.json \
   --iam-account ${GCP_USER}@${GCP_PROJECT}.iam.gserviceaccount.com
 ```

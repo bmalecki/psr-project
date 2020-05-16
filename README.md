@@ -37,14 +37,18 @@ gsutil mb -p ${GCP_PROJECT} -c STANDARD -l US-EAST1 -b on gs://${GCP_BACKEND_BUC
 # AWS
 Generate service user and set up.
 
+```
 export AWS_ACCESS_KEY_ID=""
 export AWS_SECRET_ACCESS_KEY=""
 export AWS_SESSION_TOKEN=""
+```
 
 # Terraform 
 
 Export GCP Service User Credentials
-`export GOOGLE_CREDENTIALS="$HOME/service/google.json"`
+```
+export GOOGLE_CREDENTIALS="$HOME/service/google.json"
+```
 
 Create and init GCP bucket for terraform state
 ```

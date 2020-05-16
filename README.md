@@ -23,10 +23,9 @@ Generate and save key
 ```
 GCP_USER='terraform-service-user-psr' \
 GCP_PROJECT='your_project' \
-gcloud iam service-accounts keys create $HOME/service/google.json \
+gcloud iam service-accounts keys create terraform/secrets/gcp.json \
   --iam-account ${GCP_USER}@${GCP_PROJECT}.iam.gserviceaccount.com
 ```
-
 
 Create bucket for Terraform state
 
@@ -37,29 +36,27 @@ gsutil mb -p ${GCP_PROJECT} -c STANDARD -l US-EAST1 -b on gs://${GCP_BACKEND_BUC
 ```
 
 # AWS
-Generate service user and set up.
+Generate service user set up terraform/secrets/aws.credentials
 
 ```
-export AWS_ACCESS_KEY_ID=""
-export AWS_SECRET_ACCESS_KEY=""
-export AWS_SESSION_TOKEN=""
+[default]
+aws_access_key_id=
+aws_secret_access_key=
+aws_session_token=
 ```
 
 # Terraform 
 
-Export GCP Service User Credentials
-```
-export GOOGLE_CREDENTIALS="$HOME/service/google.json"
-```
-
 Create and init GCP bucket for terraform state
 ```
-GCP_BACKEND_BUCKET_TF="your_bucket_name" envsubst < backend.tf.template > backend.tf
+GCP_BACKEND_BUCKET_TF="your_bucket_name" \
+envsubst < backend.tf.template > backend.tf
 ```
 
 Create `secret.auto.tfvars` and set your GCP project id:
 ```
-echo gcp_project="your_project_id" > secret.auto.tfvars
+GCP_PROJECT='your_project' \
+echo gcp_project=\"$GCP_PROJECT\"> secret.auto.tfvars
 ```
 
 Init and apply terraform

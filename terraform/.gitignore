@@ -34,3 +34,5 @@ terraform.rc
 
 secret.auto.tfvars
 backend.tf
+/secrets/*
+!/secrets/.gitkeep

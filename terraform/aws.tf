@@ -1,6 +1,7 @@
 provider "aws" {
-  version = "~> 2.0"
-  region  = "us-east-1"
+  shared_credentials_file = "secrets/aws.credentials"
+  version                 = "~> 2.0"
+  region                  = "us-east-1"
 }
 
 resource "aws_s3_bucket" "b" {

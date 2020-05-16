@@ -9,12 +9,29 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
+variables:
+  - group: 'GCP project'
+
 steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+- task: DownloadSecureFile@1
+  name: gcpCred
+  displayName: 'Download GCP Credentials'
+  inputs:
+    secureFile: 'gcp.json'
+
+- task: DownloadSecureFile@1
+  name: awsCred
+  displayName: 'Download AWS Credentials'
+  inputs:
+    secureFile: 'aws.credentials'
 
 - script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-    head ./terraform/gcp.tf
-  displayName: 'Run a multi-line script'
+    echo Run Terraform
+    sudo ln -s -t terraform/secrets/ $(gcpCred.secureFilePath)
+    sudo ln -s -t terraform/secrets/ $(awsCred.secureFilePath)
+    cd terraform
+    envsubst < backend.tf.template > backend.tf
+    echo gcp_project = \"$GCP_PROJECT\" > secret.auto.tfvars
+    terraform init
+    terraform apply -auto-approve
+  displayName: 'Run Terraform'

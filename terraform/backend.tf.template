@@ -1,0 +1,6 @@
+terraform { 
+  backend "gcs" {
+    bucket  = "$GCP_BACKEND_BUCKET_TF"
+    prefix  = "terraform/state"
+  }
+}

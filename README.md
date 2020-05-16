@@ -2,6 +2,12 @@
 
 # Terraform 
 
+
+Create and init GCP bucket for terraform state
+```
+GCP_BACKEND_BUCKET_TF="your_bucket_name" envsubst < backend.tf.template > backend.tf
+```
+
 Create `secret.auto.tfvars` and set your GCP project id:
 `gcp_project="your_project_id"`
 

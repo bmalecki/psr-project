@@ -5,4 +5,3 @@ resource "random_uuid" "storage" {
   }
 }
 
-

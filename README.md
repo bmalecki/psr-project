@@ -2,7 +2,10 @@
 
 # Terraform 
 
-terraform apply -var-file=secret.tfvars
+Create `secret.auto.tfvars` and set your GCP project id:
+`gcp_project="your_project_id"`
+
+terraform apply
 
 # GCP 
 
@@ -17,5 +20,7 @@ gcloud projects add-iam-policy-binding $GCP_PROJECT \
 ```
 
 ## Terraform prerequisites 
+
+### Service User Credentials
 export GOOGLE_CREDENTIALS="$HOME/service/google.json"
 

@@ -32,4 +32,4 @@ override.tf.json
 .terraformrc
 terraform.rc
 
-secret.tfvars
+secret.auto.tfvars

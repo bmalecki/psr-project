@@ -1,10 +1,10 @@
 provider "google" {
-  project     = var.gcp_project
-  region      = "us-central1"
+  project = var.gcp_project
+  region  = "us-central1"
 }
 
 resource "google_storage_bucket" "static-site" {
-  name          = "helloooosdsfewferuehfb"
+  name          = "${random_uuid.storage.keepers.storage}-${random_uuid.storage.result}"
   location      = "EU"
   force_destroy = true
 

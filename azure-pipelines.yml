@@ -26,9 +26,16 @@ steps:
     secureFile: 'aws.credentials'
 
 - script: |
+    echo Build frontend app
+    cd web
+    npm install
+    npm run build
+  displayName: 'Build frontend app'
+
+- script: |
     echo Run Terraform
-    sudo ln -s -t terraform/secrets/ $(gcpCred.secureFilePath)
-    sudo ln -s -t terraform/secrets/ $(awsCred.secureFilePath)
+    ln -s -t terraform/secrets/ $(gcpCred.secureFilePath)
+    ln -s -t terraform/secrets/ $(awsCred.secureFilePath)
     cd terraform
     envsubst < backend.tf.template > backend.tf
     echo gcp_project = \"$GCP_PROJECT\" > secret.auto.tfvars

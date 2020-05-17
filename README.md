@@ -74,5 +74,6 @@ terraform apply
 
 ```
 npm install -g serverless
-export AWS_SHARED_CREDENTIALS_FILE=$PWD/terraform/secrets/aws.credentials
+. ./scripts/login-aws.sh
+sls create --template aws-go-mod --path myService
 ```

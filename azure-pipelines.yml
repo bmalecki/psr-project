@@ -35,6 +35,7 @@ steps:
     npm install -g serverless
     ./scripts/deloy-lambda.sh
   displayName: Deploy lambda
+
 - script: |
     echo Run Terraform
     ln -s -t terraform/secrets/ $(gcpCred.secureFilePath)

@@ -40,7 +40,7 @@ steps:
     cd terraform
     envsubst < backend.tf.template > backend.tf
     echo gcp_project = \"$GCP_PROJECT\" > secret.auto.tfvars
-    echo gcp_project = \"$WEB_DOMAIN\" >> secret.auto.tfvars
+    echo static_website = \"$WEB_DOMAIN\" >> secret.auto.tfvars
     terraform init
     terraform apply -auto-approve | sed -E s/'[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}'/XXXXXX/g
   displayName: Run Terraform

@@ -45,6 +45,10 @@ aws_secret_access_key=
 aws_session_token=
 ```
 
+```
+export AWS_CONFIG_FILE=$PWD/terraform/secrets/aws.credentials
+```
+
 # Terraform 
 
 Create and init GCP bucket for terraform state
@@ -63,4 +67,11 @@ Init and apply terraform
 ```
 terraform init
 terraform apply
+```
+
+
+# Serverless framework
+
+```
+npm install -g serverless
 ```

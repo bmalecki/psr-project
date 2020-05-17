@@ -4,7 +4,7 @@ provider "google" {
   credentials = "secrets/gcp.json"
 }
 
-resource "google_storage_bucket" "static-site" {
+resource "google_storage_bucket" "example" {
   name          = "${random_uuid.storage.keepers.storage}-${random_uuid.storage.result}"
   location      = "EU"
   force_destroy = true

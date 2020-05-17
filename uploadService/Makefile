@@ -9,7 +9,7 @@ clean:
 	rm -rf ./bin ./vendor Gopkg.lock
 
 deploy: clean build
-	sls deploy --verbose
+	npx serverless deploy --verbose
 
 gomodgen:
 	chmod u+x gomod.sh

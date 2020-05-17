@@ -30,26 +30,25 @@ steps:
     ln -s -t terraform/secrets/ $(awsCred.secureFilePath)
   displayName: Link secrets
 
-# - script: |
-#     cd web
-#     npm install
-#     npm run build
-#   displayName: Build frontend app
-
-# - script: |
-#     cd terraform
-#     envsubst < backend.tf.template > backend.tf
-#     echo gcp_project = \"$GCP_PROJECT\" > secret.auto.tfvars
-#     echo gcp_project = \"$WEB_DOMAIN\" >> secret.auto.tfvars
-#     terraform init
-#     terraform apply -auto-approve | sed -E s/'[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}'/XXXXXX/g
-#   displayName: Run Terraform
-#   timeoutInMinutes: 10
-
-# - script: ./scripts/deloy-static-files.sh
-#   displayName: Deploy static website files
+- script: |
+    cd web
+    npm install
+    npm run build
+  displayName: Build frontend app
 
 - script: |
-    sudo npm install -g serverless
+    cd terraform
+    envsubst < backend.tf.template > backend.tf
+    echo gcp_project = \"$GCP_PROJECT\" > secret.auto.tfvars
+    echo gcp_project = \"$WEB_DOMAIN\" >> secret.auto.tfvars
+    terraform init
+    terraform apply -auto-approve | sed -E s/'[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}'/XXXXXX/g
+  displayName: Run Terraform
+  timeoutInMinutes: 10
+
+- script: ./scripts/deloy-static-files.sh
+  displayName: Deploy static website files
+
+- script: |
     ./scripts/deloy-lambda.sh
   displayName: Deploy lambda

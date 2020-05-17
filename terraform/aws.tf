@@ -46,3 +46,11 @@ resource "aws_s3_bucket_policy" "static_website_policy" {
 }
 POLICY
 }
+
+resource "aws_sqs_queue" "thumbnail_image" {
+  name                      = "thumbnail_image"
+  delay_seconds             = 0
+  max_message_size          = 2048
+  message_retention_seconds = 86400
+  receive_wait_time_seconds = 10
+}

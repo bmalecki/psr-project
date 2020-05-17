@@ -44,3 +44,6 @@ steps:
     terraform apply -auto-approve | sed -E s/'[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}'/XXXXXX/g
   displayName: Run Terraform
   timeoutInMinutes: 10
+
+- script: ./scripts/deloy-static-files.sh
+  displayName: Deploy static website files

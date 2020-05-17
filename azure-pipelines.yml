@@ -26,12 +26,15 @@ steps:
     secureFile: aws.credentials
 
 - script: |
-    echo Build frontend app
     cd web
     npm install
     npm run build
   displayName: Build frontend app
 
+- script: |
+    npm install -g serverless
+    ./scripts/deloy-lambda.sh
+  displayName: Deploy lambda
 - script: |
     echo Run Terraform
     ln -s -t terraform/secrets/ $(gcpCred.secureFilePath)

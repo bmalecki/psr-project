@@ -74,4 +74,5 @@ terraform apply
 
 ```
 npm install -g serverless
+export AWS_SHARED_CREDENTIALS_FILE=$PWD/terraform/secrets/aws.credentials
 ```

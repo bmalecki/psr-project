@@ -15,22 +15,22 @@ variables:
 steps:
 - task: DownloadSecureFile@1
   name: gcpCred
-  displayName: 'Download GCP Credentials'
+  displayName: Download GCP Credentials
   inputs:
-    secureFile: 'gcp.json'
+    secureFile: gcp.json
 
 - task: DownloadSecureFile@1
   name: awsCred
-  displayName: 'Download AWS Credentials'
+  displayName: Download AWS Credentials
   inputs:
-    secureFile: 'aws.credentials'
+    secureFile: aws.credentials
 
 - script: |
     echo Build frontend app
     cd web
     npm install
     npm run build
-  displayName: 'Build frontend app'
+  displayName: Build frontend app
 
 - script: |
     echo Run Terraform
@@ -41,4 +41,5 @@ steps:
     echo gcp_project = \"$GCP_PROJECT\" > secret.auto.tfvars
     terraform init
     terraform apply -auto-approve
-  displayName: 'Run Terraform'
+  displayName: Run Terraform
+  timeoutInMinutes: 10

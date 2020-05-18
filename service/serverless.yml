@@ -11,18 +11,27 @@ provider:
   stage: dev
   region: us-east-1
   environment:
-    BUCKET_ID: !Ref UploadImageStorage
-
+    UPLOAD_IMAGE_STORAGE_ID: !Ref UploadImageStorage
+    ANALYZE_IMAGE_QUEUE_URL: !Ref AnalyzeImageQueue
   iamRoleStatements:
     - Effect: "Allow"
       Action:
         - "s3:PutObject"
+        - "s3:GetBucketLocation"
       Resource: 
         - Fn::Join:
             - ""
             - - "arn:aws:s3:::"
               - "Ref" : "UploadImageStorage"
+              - "/*"
+    - Effect: "Allow"
+      Action:
+        - "sqs:SendMessage"
+        - "sqs:SetQueueAttributes"
+      Resource: 
+        - !GetAtt AnalyzeImageQueue.Arn
 
+  
 package:
   exclude:
     - ./**
@@ -44,11 +53,15 @@ functions:
           event: s3:ObjectCreated:*
           existing: true
 
-
 resources:
   Resources:
     UploadImageStorage:
       Type: AWS::S3::Bucket
+    AnalyzeImageQueue:
+      Type: AWS::SQS::Queue
+      Properties: 
+        QueueName: AnalyzeImageQueue
+        DelaySeconds: 0
     
     # ImageTable:
     #   Type: AWS::DynamoDB::Table

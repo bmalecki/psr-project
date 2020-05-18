@@ -23,6 +23,7 @@ type Response events.APIGatewayProxyResponse
 
 var svc *s3.S3
 var uploader *s3manager.Uploader
+var bucketId string
 
 func init() {
 	sess, err := session.NewSession(&aws.Config{
@@ -34,6 +35,7 @@ func init() {
 
 	svc = s3.New(sess)
 	uploader = s3manager.NewUploader(sess)
+	bucketId = os.Getenv("UPLOAD_IMAGE_STORAGE_ID")
 }
 
 func uploadS3(bucketId, fileExtension string, bodyReader io.Reader) (string, error) {
@@ -69,7 +71,6 @@ func createResponse(statusCode int, msg string) Response {
 }
 
 func Handler(ctx context.Context, req Reqeust) (Response, error) {
-	bucketId := os.Getenv("BUCKET_ID")
 	var extension string
 
 	if strings.HasPrefix(req.Headers["Content-Type"], "image/") {

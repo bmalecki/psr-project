@@ -17,14 +17,7 @@ provider:
     - Effect: "Allow"
       Action:
         - "s3:PutObject"
-        # - "s3:PutObjectAcl"
-        # - "s3:GetBucketLocation"
       Resource: 
-        - Fn::Join:
-            - ""
-            - - "arn:aws:s3:::"
-              - "Ref" : "UploadImageStorage"
-              - "/*"
         - Fn::Join:
             - ""
             - - "arn:aws:s3:::"

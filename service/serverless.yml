@@ -43,13 +43,21 @@ functions:
       - http:
           path: upload
           method: post
+  afterupload:
+    handler: bin/triggerS3
+    events:
+      - s3:
+          bucket: !Ref UploadImageStorage
+          event: s3:ObjectCreated:*
+          existing: true
 
 
 resources:
   Resources:
     UploadImageStorage:
       Type: AWS::S3::Bucket
-    # Table:
+    
+    # ImageTable:
     #   Type: AWS::DynamoDB::Table
     #   Properties:
     #     AttributeDefinitions:

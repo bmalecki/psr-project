@@ -8,12 +8,11 @@ import (
 	"os"
 	"strings"
 
-	"github.com/google/uuid"
-
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+	"github.com/google/uuid"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -61,7 +60,7 @@ func uploadS3(bucketId, fileExtension string, bodyReader io.Reader) (string, err
 
 func createResponse(statusCode int, msg string) Response {
 	return Response{
-		StatusCode: 500,
+		StatusCode: statusCode,
 		Body:       msg,
 		Headers: map[string]string{
 			"Content-Type": "plain/text",
@@ -82,13 +81,13 @@ func Handler(ctx context.Context, req Reqeust) (Response, error) {
 	bodyStringReader := strings.NewReader(req.Body)
 	reader := base64.NewDecoder(base64.StdEncoding, bodyStringReader)
 
-	_, uploadErr := uploadS3(bucketId, extension, reader)
+	fileName, uploadErr := uploadS3(bucketId, extension, reader)
 
 	if uploadErr != nil {
 		return createResponse(500, uploadErr.Error()), nil
 	}
 
-	return createResponse(200, "OK"), nil
+	return createResponse(200, fileName), nil
 }
 
 func main() {

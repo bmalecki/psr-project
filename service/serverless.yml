@@ -17,17 +17,14 @@ provider:
     - Effect: "Allow"
       Action:
         - "s3:PutObject"
-        - "s3:GetBucketLocation"
       Resource: 
         - Fn::Join:
             - ""
-            - - "arn:aws:s3:::"
-              - "Ref" : "UploadImageStorage"
+            - - Fn::GetAtt: UploadImageStorage.Arn
               - "/*"
     - Effect: "Allow"
       Action:
         - "sqs:SendMessage"
-        - "sqs:SetQueueAttributes"
       Resource: 
         - !GetAtt AnalyzeImageQueue.Arn
 

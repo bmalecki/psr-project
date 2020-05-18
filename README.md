@@ -77,3 +77,8 @@ npm install -g serverless
 . ./scripts/login-aws.sh
 sls create --template aws-go-mod --path myService
 ```
+
+Run unit test
+```
+go test ./uploadS3 -v -run TestS3Upload
+```

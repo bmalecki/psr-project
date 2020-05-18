@@ -1,0 +1,82 @@
+service: uploadservice
+frameworkVersion: '>=1.28.0 <2.0.0'
+
+provider:
+  name: aws
+  runtime: go1.x
+  memorySize: 256
+  apiGateway:
+      binaryMediaTypes:
+        - 'image/*'
+  stage: dev
+  region: us-east-1
+
+
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "s3:PutObject"
+        # - "s3:PutObjectAcl"
+        # - "s3:GetBucketLocation"
+      Resource: 
+        - Fn::Join:
+            - ""
+            - - "arn:aws:s3:::"
+              - "Ref" : "UploadImageStorage"
+              - "/*"
+        - Fn::Join:
+            - ""
+            - - "arn:aws:s3:::"
+              - "Ref" : "UploadImageStorage"
+    
+    - Effect: "Allow"
+      Action:
+        - "s3:ListBucket"
+      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
+    - Effect: "Allow"
+      Action:
+        - "s3:PutObject"
+      Resource:
+        Fn::Join:
+          - ""
+          - - "arn:aws:s3:::"
+            - "Ref" : "ServerlessDeploymentBucket"
+            - "/*"
+
+# you can define service wide environment variables here
+#  environment:
+#    variable1: value1
+
+package:
+  exclude:
+    - ./**
+  include:
+    - ./bin/**
+
+functions:
+  upload:
+    handler: bin/uploadS3
+    events:
+      - http:
+          path: upload
+          method: post
+
+#    Define function environment variables here
+#    environment:
+#      variable2: value2
+
+
+resources:
+  Resources:
+    UploadImageStorage:
+      Type: AWS::S3::Bucket
+    # Table:
+    #   Type: AWS::DynamoDB::Table
+    #   Properties:
+    #     AttributeDefinitions:
+    #       - AttributeName: ID
+    #         AttributeType: S
+    #     KeySchema:
+    #       - AttributeName: ID
+    #         KeyType: HASH
+    #     BillingMode: PAY_PER_REQUEST

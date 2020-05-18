@@ -1,3 +1,9 @@
 #!/bin/bash
 export AWS_SHARED_CREDENTIALS_FILE=$PWD/terraform/secrets/aws.credentials
-(cd uploadService && npx serverless remove)
+
+aws cloudformation describe-stack-resources --stack-name uploadservice-dev \
+    --query 'StackResources[?ResourceType == `AWS::S3::Bucket`].[PhysicalResourceId]' --output text \
+    | xargs -d ' ' \
+    | xargs -I% aws s3 rm s3://%/ --recursive
+
+(cd service && npx serverless remove)

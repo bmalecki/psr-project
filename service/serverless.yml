@@ -12,7 +12,6 @@ provider:
   region: us-east-1
   environment:
     BUCKET_ID: !Ref UploadImageStorage
-      
 
   iamRoleStatements:
     - Effect: "Allow"
@@ -30,22 +29,6 @@ provider:
             - ""
             - - "arn:aws:s3:::"
               - "Ref" : "UploadImageStorage"
-    
-    # - Effect: "Allow"
-    #   Action:
-    #     - "s3:ListBucket"
-    #   Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
-    # - Effect: "Allow"
-    #   Action:
-    #     - "s3:PutObject"
-    #   Resource:
-    #     Fn::Join:
-    #       - ""
-    #       - - "arn:aws:s3:::"
-    #         - "Ref" : "ServerlessDeploymentBucket"
-    #         - "/*"
-
-
 
 package:
   exclude:
@@ -60,8 +43,6 @@ functions:
       - http:
           path: upload
           method: post
-
-
 
 
 resources:

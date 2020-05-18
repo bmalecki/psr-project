@@ -59,6 +59,16 @@ func uploadS3(bucketId, fileExtension string, bodyReader io.Reader) (string, err
 	return uploadedFileName, nil
 }
 
+func errResponse(msg string) Response {
+	return Response{
+		StatusCode: 500,
+		Body:       msg,
+		Headers: map[string]string{
+			"Content-Type": "plain/text",
+		},
+	}
+}
+
 func Handler(ctx context.Context, req Reqeust) (Response, error) {
 	bucketId := os.Getenv("BUCKET_ID")
 	var extension string
@@ -66,20 +76,17 @@ func Handler(ctx context.Context, req Reqeust) (Response, error) {
 	if strings.HasPrefix(req.Headers["Content-Type"], "image/") {
 		extension = strings.TrimPrefix(req.Headers["Content-Type"], "image/")
 	} else {
-		resp := Response{
-			StatusCode: 500,
-			Body:       "Wrong request content type",
-			Headers: map[string]string{
-				"Content-Type": "plain/text",
-			},
-		}
-
-		return resp, nil
+		return errResponse("Wrong request content type"), nil
 	}
 
 	bodyStringReader := strings.NewReader(req.Body)
-	reader := base64.NewDecoder(base64.RawStdEncoding, bodyStringReader)
-	uploadS3(bucketId, extension, reader)
+	reader := base64.NewDecoder(base64.StdEncoding, bodyStringReader)
+
+	_, uploadErr := uploadS3(bucketId, extension, reader)
+
+	if uploadErr != nil {
+		return errResponse(uploadErr.Error()), nil
+	}
 
 	resp := Response{
 		StatusCode: 200,

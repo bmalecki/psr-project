@@ -10,7 +10,9 @@ provider:
         - 'image/*'
   stage: dev
   region: us-east-1
-
+  environment:
+    BUCKET_ID: !Ref UploadImageStorage
+      
 
   iamRoleStatements:
     - Effect: "Allow"
@@ -29,23 +31,21 @@ provider:
             - - "arn:aws:s3:::"
               - "Ref" : "UploadImageStorage"
     
-    - Effect: "Allow"
-      Action:
-        - "s3:ListBucket"
-      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
-    - Effect: "Allow"
-      Action:
-        - "s3:PutObject"
-      Resource:
-        Fn::Join:
-          - ""
-          - - "arn:aws:s3:::"
-            - "Ref" : "ServerlessDeploymentBucket"
-            - "/*"
+    # - Effect: "Allow"
+    #   Action:
+    #     - "s3:ListBucket"
+    #   Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
+    # - Effect: "Allow"
+    #   Action:
+    #     - "s3:PutObject"
+    #   Resource:
+    #     Fn::Join:
+    #       - ""
+    #       - - "arn:aws:s3:::"
+    #         - "Ref" : "ServerlessDeploymentBucket"
+    #         - "/*"
 
-# you can define service wide environment variables here
-#  environment:
-#    variable1: value1
+
 
 package:
   exclude:
@@ -61,9 +61,7 @@ functions:
           path: upload
           method: post
 
-#    Define function environment variables here
-#    environment:
-#      variable2: value2
+
 
 
 resources:

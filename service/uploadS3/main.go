@@ -2,8 +2,11 @@ package main
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
 	"io"
+	"os"
+	"strings"
 
 	"github.com/google/uuid"
 
@@ -57,30 +60,32 @@ func uploadS3(bucketId, fileExtension string, bodyReader io.Reader) (string, err
 }
 
 func Handler(ctx context.Context, req Reqeust) (Response, error) {
-	// var buf bytes.Buffer
+	bucketId := os.Getenv("BUCKET_ID")
+	var extension string
 
-	// body, err := json.Marshal(map[string]interface{}{
-	// 	"message": "Okay",
-	// })
-	// if err != nil {
-	// 	return Response{StatusCode: 404}, err
-	// }
-	// json.HTMLEscape(&buf, body)
+	if strings.HasPrefix(req.Headers["Content-Type"], "image/") {
+		extension = strings.TrimPrefix(req.Headers["Content-Type"], "image/")
+	} else {
+		resp := Response{
+			StatusCode: 500,
+			Body:       "Wrong request content type",
+			Headers: map[string]string{
+				"Content-Type": "plain/text",
+			},
+		}
 
-	// var body string
+		return resp, nil
+	}
 
-	// if req.IsBase64Encoded {
-	// 	body = "is"
-	// } else {
-	// 	body = "not is"
-	// }
+	bodyStringReader := strings.NewReader(req.Body)
+	reader := base64.NewDecoder(base64.RawStdEncoding, bodyStringReader)
+	uploadS3(bucketId, extension, reader)
 
 	resp := Response{
-		StatusCode:      200,
-		Body:            req.Body,
-		IsBase64Encoded: true,
+		StatusCode: 200,
+		Body:       "OK",
 		Headers: map[string]string{
-			"Content-Type": "content/json",
+			"Content-Type": "plain/text",
 		},
 	}
 

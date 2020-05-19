@@ -30,26 +30,11 @@ func init() {
 	qURL = os.Getenv("ANALYZE_IMAGE_QUEUE_URL")
 }
 
-func pushRecord(qURL string) (*sqs.SendMessageOutput, error) {
-
+func pushRecord(key string) (*sqs.SendMessageOutput, error) {
 	result, err := svc.SendMessage(&sqs.SendMessageInput{
 		DelaySeconds: aws.Int64(10),
-		MessageAttributes: map[string]*sqs.MessageAttributeValue{
-			"Title": {
-				DataType:    aws.String("String"),
-				StringValue: aws.String("The Whistler"),
-			},
-			"Author": {
-				DataType:    aws.String("String"),
-				StringValue: aws.String("John Grisham"),
-			},
-			"WeeksOn": {
-				DataType:    aws.String("Number"),
-				StringValue: aws.String("6"),
-			},
-		},
-		MessageBody: aws.String("Information about current NY Times fiction bestseller for week of 12/11/2016."),
-		QueueUrl:    &qURL,
+		MessageBody:  aws.String(key),
+		QueueUrl:     &qURL,
 	})
 
 	return result, err
@@ -58,17 +43,12 @@ func pushRecord(qURL string) (*sqs.SendMessageOutput, error) {
 func Handler(ctx context.Context, s3Event events.S3Event) {
 	for _, record := range s3Event.Records {
 		s3 := record.S3
-		fmt.Printf("[%s - %s] Bucket = %s, Key = %s \n", record.EventSource, record.EventTime, s3.Bucket.Name, s3.Object.Key)
+		_, err := pushRecord(s3.Object.Key)
+
+		if err != nil {
+			fmt.Println("Error", err)
+		}
 	}
-
-	result, err := pushRecord(qURL)
-
-	if err != nil {
-		fmt.Println("Error", err)
-		return
-	}
-
-	fmt.Println("Success", *result.MessageId)
 }
 
 func main() {

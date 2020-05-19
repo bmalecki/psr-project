@@ -30,9 +30,9 @@ func init() {
 	qURL = os.Getenv("ANALYZE_IMAGE_QUEUE_URL")
 }
 
-func pushRecord(key string) (*sqs.SendMessageOutput, error) {
+func pushImageKey(key string) (*sqs.SendMessageOutput, error) {
 	result, err := svc.SendMessage(&sqs.SendMessageInput{
-		DelaySeconds: aws.Int64(10),
+		DelaySeconds: aws.Int64(0),
 		MessageBody:  aws.String(key),
 		QueueUrl:     &qURL,
 	})
@@ -43,7 +43,7 @@ func pushRecord(key string) (*sqs.SendMessageOutput, error) {
 func Handler(ctx context.Context, s3Event events.S3Event) {
 	for _, record := range s3Event.Records {
 		s3 := record.S3
-		_, err := pushRecord(s3.Object.Key)
+		_, err := pushImageKey(s3.Object.Key)
 
 		if err != nil {
 			fmt.Println("Error", err)

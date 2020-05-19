@@ -13,6 +13,7 @@ provider:
   environment:
     UPLOAD_IMAGE_STORAGE_ID: !Ref UploadImageStorage
     ANALYZE_IMAGE_QUEUE_URL: !Ref AnalyzeImageQueue
+    IMAGE_TABLE: !Ref ImageTable
   iamRoleStatements:
     - Effect: "Allow"
       Action:
@@ -27,6 +28,13 @@ provider:
         - "sqs:SendMessage"
       Resource: 
         - !GetAtt AnalyzeImageQueue.Arn
+    - Effect: "Allow"
+      Action: 
+        - "dynamodb:PutItem"
+        - "dynamodb:Scan"
+        - "dynamodb:UpdateItem"
+      Resource:
+        - !GetAtt ImageTable.Arn
 
   
 package:
@@ -65,14 +73,13 @@ resources:
       Properties: 
         QueueName: AnalyzeImageQueue
         DelaySeconds: 0
-    
-    # ImageTable:
-    #   Type: AWS::DynamoDB::Table
-    #   Properties:
-    #     AttributeDefinitions:
-    #       - AttributeName: ID
-    #         AttributeType: S
-    #     KeySchema:
-    #       - AttributeName: ID
-    #         KeyType: HASH
-    #     BillingMode: PAY_PER_REQUEST
+    ImageTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: ID
+            AttributeType: S
+        KeySchema:
+          - AttributeName: ID
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST

@@ -3,27 +3,35 @@ package main
 import (
 	"context"
 	"fmt"
+	"os"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"github.com/psr-project/uploadService/imageservice"
 )
 
+var imageTableService *imageservice.ImageTableService
+
 func init() {
-	_, err := session.NewSession(&aws.Config{
+	sess, err := session.NewSession(&aws.Config{
 		Region: aws.String("us-east-1")},
 	)
 	if err != nil {
 		panic(err)
 	}
 
+	imageTableService = imageservice.New(dynamodb.New(sess), os.Getenv("IMAGE_TABLE"))
 }
 
 func Handler(ctx context.Context, sqsEvent events.SQSEvent) error {
 
 	for _, record := range sqsEvent.Records {
-		fmt.Printf("Body: %s", record.Body)
+		fileName := record.Body
+		err := imageTableService.ProcessingImageTableItem(fileName)
+		fmt.Print(err.Error())
 	}
 	return nil
 }

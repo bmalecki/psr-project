@@ -11,10 +11,10 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
-	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/google/uuid"
+	"github.com/psr-project/uploadService/imageservice"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -24,7 +24,7 @@ type Reqeust events.APIGatewayProxyRequest
 type Response events.APIGatewayProxyResponse
 
 var svcS3 *s3.S3
-var svcDb *dynamodb.DynamoDB
+var imageTableService *imageservice.ImageTableService
 var uploader *s3manager.Uploader
 var bucketId string
 var tableName string
@@ -38,11 +38,10 @@ func init() {
 	}
 
 	svcS3 = s3.New(sess)
-	svcDb = dynamodb.New(sess)
-
 	uploader = s3manager.NewUploader(sess)
 	bucketId = os.Getenv("UPLOAD_IMAGE_STORAGE_ID")
-	tableName = os.Getenv("IMAGE_TABLE")
+
+	imageTableService = imageservice.New(dynamodb.New(sess), os.Getenv("IMAGE_TABLE"))
 }
 
 func uploadS3(bucketId, fileExtension string, bodyReader io.Reader) (string, error) {
@@ -77,35 +76,6 @@ func createResponse(statusCode int, msg string) Response {
 	}
 }
 
-type ImageItem struct {
-	Id     string
-	Status string
-}
-
-func createImageItem(id string) error {
-	item := ImageItem{
-		Id:     id,
-		Status: "NEW",
-	}
-
-	av, err := dynamodbattribute.MarshalMap(item)
-	if err != nil {
-		return fmt.Errorf("Got error marshalling new image item: ", err)
-	}
-
-	input := &dynamodb.PutItemInput{
-		Item:      av,
-		TableName: aws.String(tableName),
-	}
-
-	_, err = svcDb.PutItem(input)
-	if err != nil {
-		return fmt.Errorf("Got error calling PutItem: ", err)
-	}
-
-	return nil
-}
-
 func Handler(ctx context.Context, req Reqeust) (Response, error) {
 	var extension string
 
@@ -119,10 +89,13 @@ func Handler(ctx context.Context, req Reqeust) (Response, error) {
 	reader := base64.NewDecoder(base64.StdEncoding, bodyStringReader)
 
 	fileName, uploadErr := uploadS3(bucketId, extension, reader)
-	createImageItem(fileName)
 
 	if uploadErr != nil {
 		return createResponse(500, uploadErr.Error()), nil
+	}
+
+	if err := imageTableService.CreateImageTableItem(fileName); err != nil {
+		return createResponse(500, err.Error()), nil
 	}
 
 	return createResponse(200, fileName), nil

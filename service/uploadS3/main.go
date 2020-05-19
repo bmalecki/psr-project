@@ -10,7 +10,6 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/google/uuid"
@@ -41,7 +40,7 @@ func init() {
 	uploader = s3manager.NewUploader(sess)
 	bucketId = os.Getenv("UPLOAD_IMAGE_STORAGE_ID")
 
-	imageTableService = imageservice.New(dynamodb.New(sess), os.Getenv("IMAGE_TABLE"))
+	imageTableService = imageservice.New(sess, os.Getenv("IMAGE_TABLE"))
 }
 
 func uploadS3(bucketId, fileExtension string, bodyReader io.Reader) (string, error) {

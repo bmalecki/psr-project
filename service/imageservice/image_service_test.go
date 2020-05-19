@@ -5,7 +5,6 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
 )
 
 func TestDynamoDb(t *testing.T) {
@@ -15,7 +14,7 @@ func TestDynamoDb(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	imageTableService := New(dynamodb.New(sess), "uploadservice-dev-ImageTable-1UOQKMF3IKZAI")
+	imageTableService := New(sess, "uploadservice-dev-ImageTable-1UOQKMF3IKZAI")
 
 	if err := imageTableService.ProcessingImageTableItem("cab9b42b-2141-4e20-89ca-fe000e33b483.png"); err != nil {
 		t.Errorf("%v", err)

@@ -9,7 +9,6 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/psr-project/uploadService/imageservice"
 )
 
@@ -23,7 +22,7 @@ func init() {
 		panic(err)
 	}
 
-	imageTableService = imageservice.New(dynamodb.New(sess), os.Getenv("IMAGE_TABLE"))
+	imageTableService = imageservice.New(sess, os.Getenv("IMAGE_TABLE"))
 }
 
 func Handler(ctx context.Context, sqsEvent events.SQSEvent) error {

@@ -49,6 +49,12 @@ functions:
           bucket: !Ref UploadImageStorage
           event: s3:ObjectCreated:*
           existing: true
+  analyze:
+    handler: bin/analyze
+    events:
+      - sqs:
+          arn: !GetAtt AnalyzeImageQueue.Arn
+
 
 resources:
   Resources:

@@ -19,7 +19,7 @@ type ImageTableService struct {
 	tableName string
 }
 
-func New(sess *session.Session, tableName string) *ImageTableService {
+func NewImageTableService(sess *session.Session, tableName string) *ImageTableService {
 	return &ImageTableService{
 		dynamodb.New(sess),
 		tableName,
@@ -74,4 +74,8 @@ func (it *ImageTableService) updateImageTableItem(id, status string) error {
 
 func (it *ImageTableService) ProcessingImageTableItem(id string) error {
 	return it.updateImageTableItem(id, "PROCESSING")
+}
+
+func (it *ImageTableService) ReadyImageTableItem(id string) error {
+	return it.updateImageTableItem(id, "READY")
 }

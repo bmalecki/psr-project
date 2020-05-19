@@ -22,7 +22,7 @@ func init() {
 		panic(err)
 	}
 
-	imageTableService = imageservice.New(sess, os.Getenv("IMAGE_TABLE"))
+	imageTableService = imageservice.NewImageTableService(sess, os.Getenv("IMAGE_TABLE"))
 }
 
 func Handler(ctx context.Context, sqsEvent events.SQSEvent) error {

@@ -14,7 +14,7 @@ func TestDynamoDb(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	imageTableService := New(sess, "uploadservice-dev-ImageTable-1UOQKMF3IKZAI")
+	imageTableService := NewImageTableService(sess, "uploadservice-dev-ImageTable-1UOQKMF3IKZAI")
 
 	if err := imageTableService.ProcessingImageTableItem("cab9b42b-2141-4e20-89ca-fe000e33b483.png"); err != nil {
 		t.Errorf("%v", err)

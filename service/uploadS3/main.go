@@ -40,7 +40,7 @@ func init() {
 	uploader = s3manager.NewUploader(sess)
 	bucketId = os.Getenv("UPLOAD_IMAGE_STORAGE_ID")
 
-	imageTableService = imageservice.NewImageTableService(sess, os.Getenv("IMAGE_TABLE"))
+	imageTableService = imageservice.New(sess, os.Getenv("IMAGE_TABLE"))
 }
 
 func uploadS3(bucketId, fileExtension string, bodyReader io.Reader) (string, error) {

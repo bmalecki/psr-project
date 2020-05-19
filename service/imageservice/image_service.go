@@ -19,7 +19,7 @@ type ImageTableService struct {
 	tableName string
 }
 
-func NewImageTableService(sess *session.Session, tableName string) *ImageTableService {
+func New(sess *session.Session, tableName string) *ImageTableService {
 	return &ImageTableService{
 		dynamodb.New(sess),
 		tableName,

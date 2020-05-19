@@ -13,7 +13,11 @@ provider:
   environment:
     UPLOAD_IMAGE_STORAGE_ID: !Ref UploadImageStorage
     ANALYZE_IMAGE_QUEUE_URL: !Ref AnalyzeImageQueue
+    TEXTRACT_QUEUE_URL: !Ref TextractQueue
+    TEXTRACT_SNS_ARN: !Ref AmazonTextractSNSTopic
     IMAGE_TABLE: !Ref ImageTable
+    # MOCK_AI: true
+
   iamRoleStatements:
     - Effect: "Allow"
       Action:
@@ -23,11 +27,19 @@ provider:
             - ""
             - - Fn::GetAtt: UploadImageStorage.Arn
               - "/*"
+
     - Effect: "Allow"
       Action:
         - "sqs:SendMessage"
       Resource: 
         - !GetAtt AnalyzeImageQueue.Arn
+
+    - Effect: "Allow"
+      Action:
+        - "sqs:*"
+      Resource: 
+        - !GetAtt TextractQueue.Arn
+
     - Effect: "Allow"
       Action: 
         - "dynamodb:PutItem"
@@ -36,6 +48,24 @@ provider:
       Resource:
         - !GetAtt ImageTable.Arn
 
+    - Effect: "Allow"
+      Action:
+        - "textract:*"
+      Resource:
+        - "*"
+
+    - Effect: Allow
+      Action: 
+        - "sqs:SendMessage"
+      Resource: !GetAtt TextractQueue.Arn
+      Condition:
+        ArnEquals:
+          aws:SourceArn: !Ref AmazonTextractSNSTopic
+
+    - Effect: Allow
+      Action: 
+        - "sns:Publish"
+      Resource: !Ref AmazonTextractSNSTopic
   
 package:
   exclude:
@@ -73,6 +103,21 @@ resources:
       Properties: 
         QueueName: AnalyzeImageQueue
         DelaySeconds: 0
+
+    TextractQueue:
+      Type: AWS::SQS::Queue
+      Properties: 
+        QueueName: TextractQueue
+        DelaySeconds: 0
+    AmazonTextractSNSTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        Subscription:
+          - Endpoint: !GetAtt TextractQueue.Arn
+            Protocol: "sqs"
+        TopicName: "AmazonTextractSNSTopic"
+
+
     ImageTable:
       Type: AWS::DynamoDB::Table
       Properties:

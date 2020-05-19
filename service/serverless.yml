@@ -77,9 +77,9 @@ resources:
       Type: AWS::DynamoDB::Table
       Properties:
         AttributeDefinitions:
-          - AttributeName: ID
+          - AttributeName: Id
             AttributeType: S
         KeySchema:
-          - AttributeName: ID
+          - AttributeName: Id
             KeyType: HASH
         BillingMode: PAY_PER_REQUEST

@@ -45,7 +45,7 @@ func createTestBucket(bucketIds ...string) string {
 		Bucket: aws.String(bucketId),
 	}
 
-	if _, err := svc.CreateBucket(input); err != nil {
+	if _, err := svcS3.CreateBucket(input); err != nil {
 		panic(err)
 	}
 
@@ -57,15 +57,15 @@ func deleteBucket(bucketId string) {
 		Bucket: aws.String(bucketId),
 	}
 
-	iter := s3manager.NewDeleteListIterator(svc, &s3.ListObjectsInput{
+	iter := s3manager.NewDeleteListIterator(svcS3, &s3.ListObjectsInput{
 		Bucket: aws.String(bucketId),
 	})
 
-	if err := s3manager.NewBatchDeleteWithClient(svc).Delete(aws.BackgroundContext(), iter); err != nil {
+	if err := s3manager.NewBatchDeleteWithClient(svcS3).Delete(aws.BackgroundContext(), iter); err != nil {
 		panic("Unable to delete objects from bucket")
 	}
 
-	if _, err := svc.DeleteBucket(input); err != nil {
+	if _, err := svcS3.DeleteBucket(input); err != nil {
 		panic(err)
 	}
 }

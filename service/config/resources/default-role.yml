@@ -13,7 +13,7 @@ Resources:
       # ManagedPolicyArns:
       #   - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
       Policies:
-        - PolicyName: ${self:service}-${self:provider.stage}-policy
+        - PolicyName: ${  self:service}-${self:provider.stage}-policy
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
@@ -55,12 +55,6 @@ Resources:
 
               - Effect: "Allow"
                 Action:
-                  - "sqs:*"
-                Resource:
-                  - !GetAtt TextractQueue.Arn
-
-              - Effect: "Allow"
-                Action:
                   - "dynamodb:PutItem"
                   - "dynamodb:Scan"
                   - "dynamodb:UpdateItem"
@@ -77,3 +71,9 @@ Resources:
               #   Action:
               #     - "sns:Publish"
               #   Resource: !Ref AmazonTextractSNSTopic
+
+              # - Effect: "Allow"
+              #   Action:
+              #     - "sqs:*"
+              #   Resource:
+              #     - !GetAtt TextractQueue.Arn

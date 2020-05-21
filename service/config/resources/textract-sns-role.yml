@@ -10,8 +10,6 @@ Resources:
               Service:
                 - textract.amazonaws.com
             Action: sts:AssumeRole
-      # ManagedPolicyArns:
-      #   - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
       Policies:
         - PolicyName: ${self:service}-${self:provider.stage}-textract-sns-policy
           PolicyDocument:
@@ -19,7 +17,7 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
-                - sns:Publish
-                Resource: arn:aws:sns:*:*:AmazonTextract*
+                  - "sns:Publish"
+                Resource: "arn:aws:sns:*:*:AmazonTextract*"
 
 

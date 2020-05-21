@@ -66,14 +66,3 @@ Resources:
                   - "textract:*"
                 Resource:
                   - "*"
-
-              # - Effect: Allow
-              #   Action:
-              #     - "sns:Publish"
-              #   Resource: !Ref AmazonTextractSNSTopic
-
-              # - Effect: "Allow"
-              #   Action:
-              #     - "sqs:*"
-              #   Resource:
-              #     - !GetAtt TextractQueue.Arn

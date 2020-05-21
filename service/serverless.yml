@@ -13,8 +13,8 @@ provider:
   environment:
     UPLOAD_IMAGE_STORAGE_ID: !Ref UploadImageStorage
     ANALYZE_IMAGE_QUEUE_URL: !Ref AnalyzeImageQueue
-    TEXTRACT_QUEUE_URL: !Ref TextractQueue
-    TEXTRACT_SNS_ARN: !Ref AmazonTextractSNSTopic
+    TEXTRACT_SNS_TOPIC_ARN: !Ref AmazonTextractSNSTopic
+    TEXTRACT_ROLE_ARN: !GetAtt AmazonTextractRole.Arn
     IMAGE_TABLE: !Ref ImageTable
     # MOCK_AI: true
   role: defaultRole

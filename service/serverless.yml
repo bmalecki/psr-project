@@ -4,7 +4,7 @@ frameworkVersion: '>=1.28.0 <2.0.0'
 provider:
   name: aws
   runtime: go1.x
-  memorySize: 256
+  memorySize: 128
   apiGateway:
       binaryMediaTypes:
         - 'image/*'
@@ -13,6 +13,7 @@ provider:
   environment:
     UPLOAD_IMAGE_STORAGE_ID: !Ref UploadImageStorage
     ANALYZE_IMAGE_QUEUE_URL: !Ref AnalyzeImageQueue
+    TEXTRACT_QUEUE_URL: !Ref TextractQueue
     TEXTRACT_SNS_TOPIC_ARN: !Ref AmazonTextractSNSTopic
     TEXTRACT_ROLE_ARN: !GetAtt AmazonTextractRole.Arn
     IMAGE_TABLE: !Ref ImageTable
@@ -32,7 +33,7 @@ functions:
       - http:
           path: upload
           method: post
-  afterupload:
+  after_upload:
     handler: bin/triggerS3
     events:
       - s3:
@@ -44,6 +45,11 @@ functions:
     events:
       - sqs:
           arn: !GetAtt AnalyzeImageQueue.Arn
+  after_analyze:
+    handler: bin/analyze
+    events:
+      - sqs:
+          arn: !GetAtt TextractQueue.Arn
 
 resources:
   - ${file(config/resources/default-role.yml)}

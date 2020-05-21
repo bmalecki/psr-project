@@ -58,7 +58,6 @@ func uploadS3(bucketId, fileExtension string, bodyReader io.Reader) (string, err
 	})
 
 	if err != nil {
-		// Print the error and exit.
 		return "", fmt.Errorf("Unable to upload file to %q, %v", bucketId, err)
 	}
 

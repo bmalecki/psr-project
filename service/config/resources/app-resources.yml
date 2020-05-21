@@ -27,6 +27,10 @@ Resources:
           Condition:
             ArnEquals:
               aws:SourceArn: !Ref AmazonTextractSNSTopic
+        # - Effect: Allow
+        #   Action: "sqs:*"
+        #   Principal: "*"
+        #   Resource: "*"
   AmazonTextractSNSTopic:
     Type: AWS::SNS::Topic
     Properties:

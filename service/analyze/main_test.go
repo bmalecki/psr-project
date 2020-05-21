@@ -49,6 +49,3 @@ func TestTextRecognition(t *testing.T) {
 	}
 
 }
-
-func TestTextractSqsEvent(t *testing.T) {
-}

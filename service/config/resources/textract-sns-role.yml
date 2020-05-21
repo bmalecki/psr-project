@@ -19,5 +19,10 @@ Resources:
                 Action:
                   - "sns:Publish"
                 Resource: "arn:aws:sns:*:*:AmazonTextract*"
+              - Effect: "Allow"
+                Action:
+                  - "sqs:*"
+                Resource:
+                  - !GetAtt TextractQueue.Arn
 
 

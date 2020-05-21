@@ -1,0 +1,11 @@
+{
+    "Type" : "Notification",
+    "MessageId" : "303f31b7-8ec7-576b-b8cf-66f756632bd3",
+    "TopicArn" : "arn:aws:sns:us-east-1:429668857040:AmazonTextractSNSTopic",
+    "Message" : "{\"JobId\":\"d01fc7f5d05e99f9a7083e6789a22e0b94da51e79b50941c462b276dea785509\",\"Status\":\"SUCCEEDED\",\"API\":\"StartDocumentTextDetection\",\"Timestamp\":1590089316176,\"DocumentLocation\":{\"S3ObjectName\":\"b98852ef-b9a6-476b-bc15-1ed9985e7746.png\",\"S3Bucket\":\"uploadservice-dev-uploadimagestorage-13gnkse112ttl\"}}",
+    "Timestamp" : "2020-05-21T19:28:36.260Z",
+    "SignatureVersion" : "1",
+    "Signature" : "AoFG4sAnvr1c3PpSsAO74rR7u7hlViFDuVW1N/LnFXvQZRSF5kQ5rYpqq7FuLaUlJkwGuA7u0KtGfLITE8/KXYCRysvpGibfBxvKWdwWaKJrXVyBJ/xGLHLHe8hiWErIPkNrghdBrbQ5da1OuzJ54VCX5PdfP943n0VT55eg//703InVXeV/4+74rZdCSxR2ubcRQe/gBHLGVt+KHovDbBuQLN5+ALN5oVUg89YHTG+DhTQiNUjsQol3C8bwH5N01iBU1jv/pxO5YWKWXN9wHDaMOQjB+qHvLHI7+fbb543M2fayokEcvlzb3x7W1/+5tn7ycWQzGRPNo3PRd1Cfjg==",
+    "SigningCertURL" : "https://sns.us-east-1.amazonaws.com/SimpleNotificationService-a86cb10b4e1f29c941702d737128f7b6.pem",
+    "UnsubscribeURL" : "https://sns.us-east-1.amazonaws.com/?Action=Unsubscribe&SubscriptionArn=arn:aws:sns:us-east-1:429668857040:AmazonTextractSNSTopic:18da35c1-b11b-49d0-b7c4-185165b5e9a9"
+  }

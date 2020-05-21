@@ -37,6 +37,21 @@ func init() {
 	textractSnsTopicArn = os.Getenv("TEXTRACT_SNS_TOPIC_ARN")
 }
 
+func createDocumentTextDetectionInput(fileName string) *textract.StartDocumentTextDetectionInput {
+	return &textract.StartDocumentTextDetectionInput{
+		DocumentLocation: &textract.DocumentLocation{
+			S3Object: &textract.S3Object{
+				Bucket: aws.String(bucketId),
+				Name:   aws.String(fileName),
+			},
+		},
+		NotificationChannel: &textract.NotificationChannel{
+			RoleArn:     aws.String(textractRoleArn),
+			SNSTopicArn: aws.String(textractSnsTopicArn),
+		},
+	}
+}
+
 func Handler(ctx context.Context, sqsEvent events.SQSEvent) error {
 
 	for _, record := range sqsEvent.Records {
@@ -53,19 +68,7 @@ func Handler(ctx context.Context, sqsEvent events.SQSEvent) error {
 			return err
 		}
 
-		input := &textract.StartDocumentTextDetectionInput{
-			DocumentLocation: &textract.DocumentLocation{
-				S3Object: &textract.S3Object{
-					Bucket: aws.String(bucketId),
-					Name:   aws.String(fileName),
-				},
-			},
-			NotificationChannel: &textract.NotificationChannel{
-				RoleArn:     aws.String(textractRoleArn),
-				SNSTopicArn: aws.String(textractSnsTopicArn),
-			},
-		}
-
+		input := createDocumentTextDetectionInput(fileName)
 		if _, err := textractSvc.StartDocumentTextDetection(input); err != nil {
 			return err
 		}

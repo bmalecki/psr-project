@@ -33,6 +33,7 @@ Resources:
               - Effect: Allow
                 Action:
                   - "s3:PutObject"
+                  - "s3:GetObject"
                 Resource:
                   Fn::Join:
                     - ""
@@ -41,6 +42,7 @@ Resources:
               - Effect: Allow
                 Action:
                   - "s3:PutObject"
+                  - "s3:GetObject"
                 Resource:
                   - Fn::Join:
                       - ""
@@ -49,9 +51,15 @@ Resources:
 
               - Effect: "Allow"
                 Action:
-                  - "sqs:SendMessage"
+                  - "sqs:*"
                 Resource:
                   - !GetAtt AnalyzeImageQueue.Arn
+
+              - Effect: "Allow"
+                Action:
+                  - "sqs:*"
+                Resource:
+                  - !GetAtt TextractQueue.Arn
 
               - Effect: "Allow"
                 Action:

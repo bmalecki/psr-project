@@ -1,6 +1,7 @@
 Resources:
   UploadImageStorage:
     Type: AWS::S3::Bucket
+
   AnalyzeImageQueue:
     Type: AWS::SQS::Queue
     Properties: 
@@ -33,7 +34,6 @@ Resources:
         - Endpoint: !GetAtt TextractQueue.Arn
           Protocol: "sqs"
       TopicName: "AmazonTextractSNSTopic"
-
 
   ImageTable:
     Type: AWS::DynamoDB::Table

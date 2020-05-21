@@ -9,7 +9,7 @@ import (
 )
 
 func TestTextRecognition(t *testing.T) {
-	image := "e5978e6e-f7d9-4774-b4c3-805df99c47df.png"
+	image := "542d908b-a0c6-4874-a6f6-94d3d346dcde.png"
 	bucket := "uploadservice-dev-uploadimagestorage-13gnkse112ttl"
 	fmt.Printf(image)
 
@@ -30,6 +30,7 @@ func TestTextRecognition(t *testing.T) {
 	// }
 
 	// fmt.Printf(resp.String())
+	
 
 	input := &textract.StartDocumentTextDetectionInput{
 		DocumentLocation: &textract.DocumentLocation{
@@ -39,7 +40,7 @@ func TestTextRecognition(t *testing.T) {
 			},
 		},
 		NotificationChannel: &textract.NotificationChannel{
-			RoleArn:     aws.String("arn:aws:iam::429668857040:role/uploadservice-dev-us-east-1-lambdaRole"),
+			RoleArn:     aws.String("arn:aws:iam::429668857040:role/uploadservice-dev-AmazonTextractRole-EI3CQ46MSP47"),
 			SNSTopicArn: aws.String("arn:aws:sns:us-east-1:429668857040:AmazonTextractSNSTopic"),
 		},
 	}

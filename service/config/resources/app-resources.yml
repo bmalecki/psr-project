@@ -12,6 +12,20 @@ Resources:
     Properties: 
       QueueName: TextractQueue
       DelaySeconds: 0
+  TextractQueuePolicy: 
+    Type: AWS::SQS::QueuePolicy
+    Properties: 
+      Queues: 
+        - !Ref TextractQueue
+      PolicyDocument: 
+        Statement:
+        - Effect: Allow
+          Action: sqs:SendMessage
+          Principal: "*"
+          Resource: !GetAtt TextractQueue.Arn
+          Condition:
+            ArnEquals:
+              aws:SourceArn: !Ref AmazonTextractSNSTopic
   AmazonTextractSNSTopic:
     Type: AWS::SNS::Topic
     Properties:

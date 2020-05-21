@@ -47,4 +47,5 @@ functions:
 
 resources:
   - ${file(config/resources/default-role.yml)}
+  - ${file(config/resources/textract-sns-role.yml)}
   - ${file(config/resources/app-resources.yml)}

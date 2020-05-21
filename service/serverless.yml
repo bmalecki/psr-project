@@ -56,14 +56,6 @@ provider:
 
     - Effect: Allow
       Action: 
-        - "sqs:SendMessage"
-      Resource: !GetAtt TextractQueue.Arn
-      Condition:
-        ArnEquals:
-          aws:SourceArn: !Ref AmazonTextractSNSTopic
-
-    - Effect: Allow
-      Action: 
         - "sns:Publish"
       Resource: !Ref AmazonTextractSNSTopic
   

@@ -36,7 +36,7 @@ func Handler(ctx context.Context, sqsEvent events.SQSEvent) error {
 
 	for _, record := range sqsEvent.Records {
 		fileName := record.Body
-		if err := imageTableSvc.ProcessingImageTableItem(fileName); err != nil {
+		if err := imageTableSvc.ProcessingImageStatusItem(fileName); err != nil {
 			return err
 		}
 

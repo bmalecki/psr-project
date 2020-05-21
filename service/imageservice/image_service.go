@@ -72,10 +72,10 @@ func (it *ImageTableService) updateImageTableItem(id, status string) error {
 	return nil
 }
 
-func (it *ImageTableService) ProcessingImageTableItem(id string) error {
+func (it *ImageTableService) ProcessingImageStatusItem(id string) error {
 	return it.updateImageTableItem(id, "PROCESSING")
 }
 
-func (it *ImageTableService) ReadyImageTableItem(id string) error {
+func (it *ImageTableService) ReadyImageStatusItem(id string) error {
 	return it.updateImageTableItem(id, "READY")
 }

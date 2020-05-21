@@ -16,7 +16,7 @@ func TestDynamoDb(t *testing.T) {
 	}
 	imageTableService := New(sess, "uploadservice-dev-ImageTable-1UOQKMF3IKZAI")
 
-	if err := imageTableService.ProcessingImageTableItem("cab9b42b-2141-4e20-89ca-fe000e33b483.png"); err != nil {
+	if err := imageTableService.ProcessingImageStatusItem("cab9b42b-2141-4e20-89ca-fe000e33b483.png"); err != nil {
 		t.Errorf("%v", err)
 	}
 }

@@ -1,0 +1,33 @@
+Resources:
+  UploadImageStorage:
+    Type: AWS::S3::Bucket
+  AnalyzeImageQueue:
+    Type: AWS::SQS::Queue
+    Properties: 
+      QueueName: AnalyzeImageQueue
+      DelaySeconds: 0
+
+  TextractQueue:
+    Type: AWS::SQS::Queue
+    Properties: 
+      QueueName: TextractQueue
+      DelaySeconds: 0
+  AmazonTextractSNSTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      Subscription:
+        - Endpoint: !GetAtt TextractQueue.Arn
+          Protocol: "sqs"
+      TopicName: "AmazonTextractSNSTopic"
+
+
+  ImageTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: Id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: Id
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST

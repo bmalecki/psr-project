@@ -1,0 +1,79 @@
+Resources:
+  defaultRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action: sts:AssumeRole
+      # ManagedPolicyArns:
+      #   - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+      Policies:
+        - PolicyName: ${self:service}-${self:provider.stage}-policy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource:
+                  - "Fn::Join":
+                      - ":"
+                      - - "arn:aws:logs"
+                        - Ref: "AWS::Region"
+                        - Ref: "AWS::AccountId"
+                        - "log-group:/aws/lambda/*:*:*"
+              # My resources policy
+              - Effect: Allow
+                Action:
+                  - "s3:PutObject"
+                Resource:
+                  Fn::Join:
+                    - ""
+                    - - "arn:aws:s3:::"
+                      - "Ref": "ServerlessDeploymentBucket"
+              - Effect: Allow
+                Action:
+                  - "s3:PutObject"
+                Resource:
+                  - Fn::Join:
+                      - ""
+                      - - Fn::GetAtt: UploadImageStorage.Arn
+                        - "/*"
+
+              - Effect: "Allow"
+                Action:
+                  - "sqs:SendMessage"
+                Resource:
+                  - !GetAtt AnalyzeImageQueue.Arn
+
+              - Effect: "Allow"
+                Action:
+                  - "sqs:*"
+                Resource:
+                  - !GetAtt TextractQueue.Arn
+
+              - Effect: "Allow"
+                Action:
+                  - "dynamodb:PutItem"
+                  - "dynamodb:Scan"
+                  - "dynamodb:UpdateItem"
+                Resource:
+                  - !GetAtt ImageTable.Arn
+
+              - Effect: "Allow"
+                Action:
+                  - "textract:*"
+                Resource:
+                  - "*"
+
+              - Effect: Allow
+                Action:
+                  - "sns:Publish"
+                Resource: !Ref AmazonTextractSNSTopic

@@ -17,47 +17,7 @@ provider:
     TEXTRACT_SNS_ARN: !Ref AmazonTextractSNSTopic
     IMAGE_TABLE: !Ref ImageTable
     # MOCK_AI: true
-
-  iamRoleStatements:
-    - Effect: "Allow"
-      Action:
-        - "s3:PutObject"
-      Resource: 
-        - Fn::Join:
-            - ""
-            - - Fn::GetAtt: UploadImageStorage.Arn
-              - "/*"
-
-    - Effect: "Allow"
-      Action:
-        - "sqs:SendMessage"
-      Resource: 
-        - !GetAtt AnalyzeImageQueue.Arn
-
-    - Effect: "Allow"
-      Action:
-        - "sqs:*"
-      Resource: 
-        - !GetAtt TextractQueue.Arn
-
-    - Effect: "Allow"
-      Action: 
-        - "dynamodb:PutItem"
-        - "dynamodb:Scan"
-        - "dynamodb:UpdateItem"
-      Resource:
-        - !GetAtt ImageTable.Arn
-
-    - Effect: "Allow"
-      Action:
-        - "textract:*"
-      Resource:
-        - "*"
-
-    - Effect: Allow
-      Action: 
-        - "sns:Publish"
-      Resource: !Ref AmazonTextractSNSTopic
+  role: defaultRole
   
 package:
   exclude:
@@ -85,38 +45,6 @@ functions:
       - sqs:
           arn: !GetAtt AnalyzeImageQueue.Arn
 
-
 resources:
-  Resources:
-    UploadImageStorage:
-      Type: AWS::S3::Bucket
-    AnalyzeImageQueue:
-      Type: AWS::SQS::Queue
-      Properties: 
-        QueueName: AnalyzeImageQueue
-        DelaySeconds: 0
-
-    TextractQueue:
-      Type: AWS::SQS::Queue
-      Properties: 
-        QueueName: TextractQueue
-        DelaySeconds: 0
-    AmazonTextractSNSTopic:
-      Type: AWS::SNS::Topic
-      Properties:
-        Subscription:
-          - Endpoint: !GetAtt TextractQueue.Arn
-            Protocol: "sqs"
-        TopicName: "AmazonTextractSNSTopic"
-
-
-    ImageTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        AttributeDefinitions:
-          - AttributeName: Id
-            AttributeType: S
-        KeySchema:
-          - AttributeName: Id
-            KeyType: HASH
-        BillingMode: PAY_PER_REQUEST
+  - ${file(config/resources/default-role.yml)}
+  - ${file(config/resources/app-resources.yml)}

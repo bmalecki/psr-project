@@ -9,8 +9,8 @@ import (
 )
 
 func TestTextRecognition(t *testing.T) {
-	image := "b98852ef-b9a6-476b-bc15-1ed9985e7746.png"
-	bucket := "uploadservice-dev-uploadimagestorage-13gnkse112ttl"
+	image := "e4c8cf25-3c47-49c1-86c0-55e95f96cd5a.png"
+	bucket := "uploadservice-dev-uploadimagestorage-c0e9l3kj3rju"
 	fmt.Printf(image)
 
 	// input := &textract.DetectDocumentTextInput{
@@ -22,6 +22,7 @@ func TestTextRecognition(t *testing.T) {
 	// 	},
 	// }
 
+	
 	// req, resp := textractSvc.DetectDocumentTextRequest(input)
 
 	// err := req.Send()

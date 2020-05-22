@@ -46,7 +46,7 @@ functions:
       - sqs:
           arn: !GetAtt AnalyzeImageQueue.Arn
   after_analyze:
-    handler: bin/analyze
+    handler: bin/afteranalyze
     events:
       - sqs:
           arn: !GetAtt TextractQueue.Arn

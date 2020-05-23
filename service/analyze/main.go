@@ -48,7 +48,6 @@ func createDocumentTextDetectionInput(fileName string) *textract.StartDocumentTe
 }
 
 func Handler(ctx context.Context, sqsEvent events.SQSEvent) error {
-
 	for _, record := range sqsEvent.Records {
 		fileName := record.Body
 

@@ -17,7 +17,6 @@ provider:
     TEXTRACT_SNS_TOPIC_ARN: !Ref AmazonTextractSNSTopic
     TEXTRACT_ROLE_ARN: !GetAtt AmazonTextractRole.Arn
     IMAGE_TABLE: !Ref ImageTable
-    # MOCK_AI: true
   role: defaultRole
   
 package:

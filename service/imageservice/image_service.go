@@ -50,11 +50,11 @@ func (it *ImageTableService) CreateImageTableItem(id string) error {
 	return nil
 }
 
-func (it *ImageTableService) updateImageTableItem(id, status string) error {
+func (it *ImageTableService) updateImageTableItem(id, column, value string) error {
 	input := &dynamodb.UpdateItemInput{
 		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
 			":s": {
-				S: aws.String(status),
+				S: aws.String(value),
 			},
 		},
 		TableName: aws.String(it.tableName),
@@ -63,7 +63,7 @@ func (it *ImageTableService) updateImageTableItem(id, status string) error {
 				S: aws.String(id),
 			},
 		},
-		UpdateExpression: aws.String("set ImageStatus = :s"),
+		UpdateExpression: aws.String(fmt.Sprintf("set %s = :s", column)),
 	}
 
 	if _, err := it.svcDb.UpdateItem(input); err != nil {
@@ -73,9 +73,9 @@ func (it *ImageTableService) updateImageTableItem(id, status string) error {
 }
 
 func (it *ImageTableService) ProcessingImageStatusItem(id string) error {
-	return it.updateImageTableItem(id, "PROCESSING")
+	return it.updateImageTableItem(id, "ImageStatus", "PROCESSING")
 }
 
 func (it *ImageTableService) ReadyImageStatusItem(id string) error {
-	return it.updateImageTableItem(id, "READY")
+	return it.updateImageTableItem(id, "ImageStatus", "READY")
 }

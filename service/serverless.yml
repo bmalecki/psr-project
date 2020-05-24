@@ -7,7 +7,7 @@ provider:
   memorySize: 128
   apiGateway:
       binaryMediaTypes:
-        - 'image/*'
+        - 'multipart/form-data'
   stage: dev
   region: us-east-1
   environment:
@@ -32,23 +32,24 @@ functions:
       - http:
           path: document
           method: post
-  after_upload:
-    handler: bin/triggerS3
-    events:
-      - s3:
-          bucket: !Ref UploadImageStorage
-          event: s3:ObjectCreated:*
-          existing: true
-  analyze:
-    handler: bin/analyze
-    events:
-      - sqs:
-          arn: !GetAtt AnalyzeImageQueue.Arn
-  after_analyze:
-    handler: bin/afteranalyze
-    events:
-      - sqs:
-          arn: !GetAtt TextractQueue.Arn
+          cors: true 
+  # after_upload:
+  #   handler: bin/triggerS3
+  #   events:
+  #     - s3:
+  #         bucket: !Ref UploadImageStorage
+  #         event: s3:ObjectCreated:*
+  #         existing: true
+  # analyze:
+  #   handler: bin/analyze
+  #   events:
+  #     - sqs:
+  #         arn: !GetAtt AnalyzeImageQueue.Arn
+  # after_analyze:
+  #   handler: bin/afteranalyze
+  #   events:
+  #     - sqs:
+  #         arn: !GetAtt TextractQueue.Arn
 
 resources:
   - ${file(config/resources/default-role.yml)}

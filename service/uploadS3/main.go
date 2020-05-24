@@ -1,10 +1,15 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"encoding/base64"
 	"fmt"
 	"io"
+	"io/ioutil"
+	"log"
+	"mime"
+	"mime/multipart"
 	"os"
 	"strings"
 
@@ -64,29 +69,79 @@ func uploadS3(bucketId, fileExtension string, bodyReader io.Reader) (string, err
 	return uploadedFileName, nil
 }
 
+type FromData struct {
+	FileReader    io.Reader
+	FileName      string
+	FileExtension string
+	Words         string
+}
+
+func parseMultipartForm(contentType string, reader io.Reader) (*FromData, error) {
+	_, params, err := mime.ParseMediaType(contentType)
+	if err != nil {
+		log.Fatal(err)
+	}
+	mr := multipart.NewReader(reader, params["boundary"])
+
+	var formData FromData
+
+	for {
+		p, err := mr.NextPart()
+		if err == io.EOF {
+			return &formData, nil
+		}
+		if err != nil {
+			log.Fatal(err)
+		}
+		slurp, err := ioutil.ReadAll(p)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		_, params, err := mime.ParseMediaType(p.Header.Get("Content-Disposition"))
+
+		switch params["name"] {
+		case "file":
+			if strings.HasPrefix(p.Header.Get("Content-Type"), "image/") {
+				formData.FileReader = bytes.NewReader(slurp)
+				formData.FileName = params["filename"]
+				formData.FileExtension = strings.TrimPrefix(p.Header.Get("Content-Type"), "image/")
+			} else {
+				return nil, fmt.Errorf("File is not an image")
+			}
+		case "words":
+			formData.Words = string(slurp)
+		}
+	}
+}
+
 func createResponse(statusCode int, msg string) Response {
 	return Response{
 		StatusCode: statusCode,
 		Body:       msg,
 		Headers: map[string]string{
-			"Content-Type": "plain/text",
+			"Content-Type":                "plain/text",
+			"Access-Control-Allow-Origin": "*",
 		},
 	}
 }
 
 func Handler(ctx context.Context, req Reqeust) (Response, error) {
-	var extension string
+	fmt.Printf("CT: %s", req.Headers["Content-Type"])
 
-	if strings.HasPrefix(req.Headers["Content-Type"], "image/") {
-		extension = strings.TrimPrefix(req.Headers["Content-Type"], "image/")
-	} else {
+	if !strings.HasPrefix(req.Headers["Content-Type"], "multipart/form-data") {
 		return createResponse(500, "Wrong request content type"), nil
 	}
 
 	bodyStringReader := strings.NewReader(req.Body)
-	reader := base64.NewDecoder(base64.StdEncoding, bodyStringReader)
+	byteReader := base64.NewDecoder(base64.StdEncoding, bodyStringReader)
+	formData, formErr := parseMultipartForm(req.Headers["Content-Type"], byteReader)
 
-	fileName, uploadErr := uploadS3(bucketId, extension, reader)
+	if formErr != nil {
+		return createResponse(500, formErr.Error()), nil
+	}
+
+	fileName, uploadErr := uploadS3(bucketId, formData.FileExtension, formData.FileReader)
 
 	if uploadErr != nil {
 		return createResponse(500, uploadErr.Error()), nil

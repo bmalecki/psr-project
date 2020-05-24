@@ -12,9 +12,11 @@ function UploadForm() {
     const file = inputFile.current.files[0];
 
     formData.append("file", file)
+    formData.append("words", "aaaaa")
+
 
     fetch(`${url}/document`, {
-      mode: 'no-cors',
+      // mode: 'no-cors',
       method: "POST",
       body: formData
     }).then(function (res) {

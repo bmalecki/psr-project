@@ -3,6 +3,8 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"strings"
 	"testing"
 
@@ -70,18 +72,49 @@ func deleteBucket(bucketId string) {
 	}
 }
 
-func TestS3Upload(t *testing.T) {
-	bucketId := createTestBucket()
-	defer deleteBucket(bucketId)
+// func TestS3Upload(t *testing.T) {
+// 	bucketId := createTestBucket()
+// 	defer deleteBucket(bucketId)
 
-	content := "my request"
-	name, err := uploadS3(bucketId, "txt", strings.NewReader(content))
+// 	content := "my request"
+// 	name, err := uploadS3(bucketId, "txt", strings.NewReader(content))
+
+// 	if err != nil {
+// 		t.Error("Error during upload file to S3", err)
+// 	}
+
+// 	if !strings.HasSuffix(name, ".txt") {
+// 		t.Errorf("Expected .txt suffix but was: %s", name)
+// 	}
+// }
+
+func TestMulitpart(t *testing.T) {
+	msg := `------WebKitFormBoundaryzCSuTbxRYc6IeBzz
+Content-Disposition: form-data; name="file"; filename="test.json"
+Content-Type: image/png
+
+{
+	"Type" : "Notification",
+	"MessageId" : "303f31b7-8ec7-576b-b8cf-66f756632bd3",
+}
+------WebKitFormBoundaryzCSuTbxRYc6IeBzz
+Content-Disposition: form-data; name="words"
+
+aaaaa
+------WebKitFormBoundaryzCSuTbxRYc6IeBzz
+Content-Disposition: form-data; name="AAAA"
+
+wdwe
+------WebKitFormBoundaryzCSuTbxRYc6IeBzz--`
+
+	formData, err := parseMultipartForm("multipart/form-data; boundary=----WebKitFormBoundaryzCSuTbxRYc6IeBzz", strings.NewReader(msg))
 
 	if err != nil {
-		t.Error("Error during upload file to S3", err)
+		log.Fatalln(err.Error())
 	}
 
-	if !strings.HasSuffix(name, ".txt") {
-		t.Errorf("Expected .txt suffix but was: %s", name)
-	}
+	bytes, _ := ioutil.ReadAll(formData.FileReader)
+	s := string(bytes)
+
+	fmt.Printf("%v", s)
 }

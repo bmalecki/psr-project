@@ -3,5 +3,6 @@ terraform {
     bucket  = "$BACKEND_BUCKET_TF"
     key    = "terraform/terraform.tfstate"
     region = "us-east-1"
+    shared_credentials_file = "secrets/aws.credentials"
   }
 }

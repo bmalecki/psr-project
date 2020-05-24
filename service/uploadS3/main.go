@@ -120,22 +120,28 @@ func createResponse(statusCode int, msg string) Response {
 		StatusCode: statusCode,
 		Body:       msg,
 		Headers: map[string]string{
-			"Content-Type":                "plain/text",
-			"Access-Control-Allow-Origin": "*",
+			"Content-Type": "plain/text",
+			// "Access-Control-Allow-Origin":      "*",
+			// "Access-Control-Allow-Credentials": "true",
 		},
 	}
 }
 
 func Handler(ctx context.Context, req Reqeust) (Response, error) {
-	fmt.Printf("CT: %s", req.Headers["Content-Type"])
 
-	if !strings.HasPrefix(req.Headers["Content-Type"], "multipart/form-data") {
+	// See: https://github.com/aws/aws-lambda-go/issues/117
+	contentType := req.Headers["Content-Type"]
+	if len(contentType) == 0 {
+		contentType = req.Headers["content-type"]
+	}
+
+	if !strings.HasPrefix(contentType, "multipart/form-data") {
 		return createResponse(500, "Wrong request content type"), nil
 	}
 
 	bodyStringReader := strings.NewReader(req.Body)
 	byteReader := base64.NewDecoder(base64.StdEncoding, bodyStringReader)
-	formData, formErr := parseMultipartForm(req.Headers["Content-Type"], byteReader)
+	formData, formErr := parseMultipartForm(contentType, byteReader)
 
 	if formErr != nil {
 		return createResponse(500, formErr.Error()), nil

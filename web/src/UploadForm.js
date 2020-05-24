@@ -16,7 +16,7 @@ function UploadForm() {
 
 
     fetch(`${url}/document`, {
-      // mode: 'no-cors',
+      mode: 'no-cors',
       method: "POST",
       body: formData
     }).then(function (res) {

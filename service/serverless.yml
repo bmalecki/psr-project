@@ -32,24 +32,23 @@ functions:
       - http:
           path: document
           method: post
-          cors: true 
-  # after_upload:
-  #   handler: bin/triggerS3
-  #   events:
-  #     - s3:
-  #         bucket: !Ref UploadImageStorage
-  #         event: s3:ObjectCreated:*
-  #         existing: true
-  # analyze:
-  #   handler: bin/analyze
-  #   events:
-  #     - sqs:
-  #         arn: !GetAtt AnalyzeImageQueue.Arn
-  # after_analyze:
-  #   handler: bin/afteranalyze
-  #   events:
-  #     - sqs:
-  #         arn: !GetAtt TextractQueue.Arn
+  after_upload:
+    handler: bin/triggerS3
+    events:
+      - s3:
+          bucket: !Ref UploadImageStorage
+          event: s3:ObjectCreated:*
+          existing: true
+  analyze:
+    handler: bin/analyze
+    events:
+      - sqs:
+          arn: !GetAtt AnalyzeImageQueue.Arn
+  after_analyze:
+    handler: bin/afteranalyze
+    events:
+      - sqs:
+          arn: !GetAtt TextractQueue.Arn
 
 resources:
   - ${file(config/resources/default-role.yml)}

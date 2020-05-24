@@ -4,6 +4,7 @@ import { url } from './environment'
 function UploadForm() {
 
   const inputFile = useRef(null);
+  const forbiddenWords = useRef(null);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -12,7 +13,7 @@ function UploadForm() {
     const file = inputFile.current.files[0];
 
     formData.append("file", file)
-    formData.append("words", "aaaaa")
+    formData.append("words", forbiddenWords.current.value)
 
     try {
       const res = await fetch(`${url}/document`, {
@@ -20,7 +21,7 @@ function UploadForm() {
         method: "POST",
         body: formData
       })
-      
+
       if (res.ok) {
         console.log("Perfect! ");
       } else {
@@ -36,8 +37,11 @@ function UploadForm() {
     <div className="UploadForm">
       <h1>Upload document</h1>
       <form onSubmit={handleSubmit}>
-        <label htmlFor="documentFile">Select a file:</label>
+        <label htmlFor="documentFile">Select a file: </label>
         <input type="file" id="documentFile" ref={inputFile} required></input>
+        <br />
+        <label htmlFor="forbiddenWords">Forbidden Words: </label>
+        <input type="text" id="forbiddenWords" ref={forbiddenWords} required></input>
         <br />
         <input type="submit" value="Submit" />
       </form>

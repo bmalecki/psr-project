@@ -109,7 +109,6 @@ func parseMultipartForm(contentType string, reader io.Reader) (*FromData, error)
 				return nil, fmt.Errorf("File is not an image")
 			}
 		case "words":
-			fmt.Printf("AAA: %s", string(slurp))
 			formData.Words = strings.Split(string(slurp), ",")
 		}
 	}
@@ -151,7 +150,7 @@ func Handler(ctx context.Context, req Reqeust) (Response, error) {
 		return createResponse(500, uploadErr.Error()), nil
 	}
 
-	if err := imageTableService.CreateImageTableItem(objectId, formData.FileName); err != nil {
+	if err := imageTableService.CreateImageTableItem(objectId, formData.FileName, formData.Words); err != nil {
 		return createResponse(500, err.Error()), nil
 	}
 

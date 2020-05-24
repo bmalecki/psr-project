@@ -5,7 +5,7 @@ function UploadForm() {
 
   const inputFile = useRef(null);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     let formData = new FormData();
 
@@ -14,20 +14,22 @@ function UploadForm() {
     formData.append("file", file)
     formData.append("words", "aaaaa")
 
-
-    fetch(`${url}/document`, {
-      mode: 'no-cors',
-      method: "POST",
-      body: formData
-    }).then(function (res) {
+    try {
+      const res = await fetch(`${url}/document`, {
+        mode: 'no-cors',
+        method: "POST",
+        body: formData
+      })
+      
       if (res.ok) {
         console.log("Perfect! ");
       } else {
         console.log("Oops! ");
       }
-    }, function (e) {
+    }
+    catch (e) {
       console.log("Error submitting form!");
-    });
+    }
   }
 
   return (

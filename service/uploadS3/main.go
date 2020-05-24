@@ -121,8 +121,6 @@ func createResponse(statusCode int, msg string) Response {
 		Body:       msg,
 		Headers: map[string]string{
 			"Content-Type": "plain/text",
-			// "Access-Control-Allow-Origin":      "*",
-			// "Access-Control-Allow-Credentials": "true",
 		},
 	}
 }

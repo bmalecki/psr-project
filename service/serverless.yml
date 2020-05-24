@@ -30,7 +30,7 @@ functions:
     handler: bin/uploadS3
     events:
       - http:
-          path: upload
+          path: document
           method: post
   after_upload:
     handler: bin/triggerS3

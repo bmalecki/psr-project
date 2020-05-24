@@ -1,22 +1,40 @@
 import React, { useRef } from 'react';
+import { url } from './environment'
 
 function UploadForm() {
 
-  const input = useRef(null);
+  const inputFile = useRef(null);
 
   const handleSubmit = (event) => {
-    alert('A name was submitted: ' + input.current.value);
     event.preventDefault();
+    let formData = new FormData();
+
+    const file = inputFile.current.files[0];
+
+    formData.append("file", file)
+
+    fetch(`${url}/document`, {
+      mode: 'no-cors',
+      method: "POST",
+      body: formData
+    }).then(function (res) {
+      if (res.ok) {
+        console.log("Perfect! ");
+      } else {
+        console.log("Oops! ");
+      }
+    }, function (e) {
+      console.log("Error submitting form!");
+    });
   }
 
   return (
     <div className="UploadForm">
-      <h1>upload form</h1>
+      <h1>Upload document</h1>
       <form onSubmit={handleSubmit}>
-        <label>
-          Name:
-          <input type="text" ref={input} />
-        </label>
+        <label htmlFor="documentFile">Select a file:</label>
+        <input type="file" id="documentFile" ref={inputFile} required></input>
+        <br />
         <input type="submit" value="Submit" />
       </form>
     </div>

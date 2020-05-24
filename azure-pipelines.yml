@@ -24,12 +24,6 @@ steps:
   displayName: Link secrets
 
 - script: |
-    cd web
-    npm install
-    npm run build
-  displayName: Build frontend app
-
-- script: |
     cd terraform
     envsubst < backend.tf.template > backend.tf
     echo static_website = \"$WEB_DOMAIN\" >> secret.auto.tfvars
@@ -38,9 +32,12 @@ steps:
   displayName: Run Terraform
   timeoutInMinutes: 10
 
-- script: ./scripts/deloy-static-files.sh
-  displayName: Deploy static website files
-
 - script: |
     ./scripts/deloy-lambda.sh
   displayName: Deploy lambda
+
+- script: |
+    cd web
+    npm install
+    npm run deploy
+  displayName: Build frontend app

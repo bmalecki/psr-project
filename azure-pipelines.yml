@@ -14,19 +14,12 @@ variables:
 
 steps:
 - task: DownloadSecureFile@1
-  name: gcpCred
-  displayName: Download GCP Credentials
-  inputs:
-    secureFile: gcp.json
-
-- task: DownloadSecureFile@1
   name: awsCred
   displayName: Download AWS Credentials
   inputs:
     secureFile: aws.credentials
 
 - script: |
-    ln -s -t terraform/secrets/ $(gcpCred.secureFilePath)
     ln -s -t terraform/secrets/ $(awsCred.secureFilePath)
   displayName: Link secrets
 
@@ -39,7 +32,6 @@ steps:
 - script: |
     cd terraform
     envsubst < backend.tf.template > backend.tf
-    echo gcp_project = \"$GCP_PROJECT\" > secret.auto.tfvars
     echo static_website = \"$WEB_DOMAIN\" >> secret.auto.tfvars
     terraform init
     terraform apply -auto-approve | sed -E s/'[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}'/XXXXXX/g

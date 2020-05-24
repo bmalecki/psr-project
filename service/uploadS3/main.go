@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"mime"
 	"mime/multipart"
 	"os"
@@ -79,7 +78,7 @@ type FromData struct {
 func parseMultipartForm(contentType string, reader io.Reader) (*FromData, error) {
 	_, params, err := mime.ParseMediaType(contentType)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	mr := multipart.NewReader(reader, params["boundary"])
 
@@ -91,11 +90,11 @@ func parseMultipartForm(contentType string, reader io.Reader) (*FromData, error)
 			return &formData, nil
 		}
 		if err != nil {
-			log.Fatal(err)
+			return nil, err
 		}
 		slurp, err := ioutil.ReadAll(p)
 		if err != nil {
-			log.Fatal(err)
+			return nil, err
 		}
 
 		_, params, err := mime.ParseMediaType(p.Header.Get("Content-Disposition"))
@@ -145,17 +144,17 @@ func Handler(ctx context.Context, req Reqeust) (Response, error) {
 		return createResponse(500, formErr.Error()), nil
 	}
 
-	fileName, uploadErr := uploadS3(bucketId, formData.FileExtension, formData.FileReader)
+	objectId, uploadErr := uploadS3(bucketId, formData.FileExtension, formData.FileReader)
 
 	if uploadErr != nil {
 		return createResponse(500, uploadErr.Error()), nil
 	}
 
-	if err := imageTableService.CreateImageTableItem(fileName); err != nil {
+	if err := imageTableService.CreateImageTableItem(objectId, formData.FileName); err != nil {
 		return createResponse(500, err.Error()), nil
 	}
 
-	return createResponse(200, fileName), nil
+	return createResponse(200, objectId), nil
 }
 
 func main() {

@@ -12,6 +12,7 @@ import (
 type imageItem struct {
 	Id          string
 	ImageStatus string
+	Name        string
 }
 
 type ImageTableService struct {
@@ -26,10 +27,11 @@ func New(sess *session.Session, tableName string) *ImageTableService {
 	}
 }
 
-func (it *ImageTableService) CreateImageTableItem(id string) error {
+func (it *ImageTableService) CreateImageTableItem(id, name string) error {
 	item := imageItem{
 		Id:          id,
 		ImageStatus: "NEW",
+		Name:        name,
 	}
 
 	av, err := dynamodbattribute.MarshalMap(item)

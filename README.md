@@ -52,3 +52,9 @@ Run unit test
 ```
 go test ./uploadS3 -v -run TestS3Upload
 ```
+
+# Frontend
+
+```
+npm run deploy
+```

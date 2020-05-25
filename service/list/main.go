@@ -44,18 +44,31 @@ func createResponse(statusCode int, msg string) Response {
 }
 
 func Handler(ctx context.Context, req Reqeust) (Response, error) {
+	var imageItemJson []byte
+	var err error
 	id := req.PathParameters["id"]
 
 	fmt.Println(id)
 
-	imageItem, err := imageTableService.GetImageItemById(id)
+	if len(id) != 0 {
+		imageItem, err := imageTableService.GetImageItemById(id)
 
-	if err != nil {
-		fmt.Println(err.Error())
-		return createResponse(500, ""), err
+		if err != nil {
+			fmt.Println(err.Error())
+			return createResponse(500, ""), err
+		}
+
+		imageItemJson, err = json.Marshal(imageItem)
+	} else {
+		imageItemList, err := imageTableService.GetAllImageItems()
+
+		if err != nil {
+			fmt.Println(err.Error())
+			return createResponse(500, ""), err
+		}
+
+		imageItemJson, err = json.Marshal(imageItemList)
 	}
-
-	imageItemJson, err := json.Marshal(imageItem)
 
 	if err != nil {
 		fmt.Println(err.Error())

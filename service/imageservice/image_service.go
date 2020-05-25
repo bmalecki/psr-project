@@ -14,7 +14,7 @@ type ImageItem struct {
 	ImageStatus            string
 	Name                   string
 	ForbiddenWords         []string
-	occurredForbiddenWords []string
+	OccurredForbiddenWords []string
 }
 
 type ImageTableService struct {
@@ -130,6 +130,33 @@ func (it *ImageTableService) GetImageItemById(id string) (*ImageItem, error) {
 	}
 
 	return &item, nil
+}
+
+func (it *ImageTableService) GetAllImageItems() ([]*ImageItem, error) {
+	params := &dynamodb.ScanInput{
+		TableName: aws.String(it.tableName),
+	}
+
+	result, err := it.svcDb.Scan(params)
+	if err != nil {
+		fmt.Println((err.Error()))
+		return nil, err
+	}
+
+	items := make([]*ImageItem, 0)
+
+	for _, i := range result.Items {
+		item := ImageItem{}
+		err = dynamodbattribute.UnmarshalMap(i, &item)
+
+		if err != nil {
+			return nil, err
+		}
+
+		items = append(items, &item)
+	}
+
+	return items, nil
 }
 
 func (it *ImageTableService) GetForbiddenWords(id string) ([]string, error) {

@@ -17,16 +17,17 @@ function UploadForm() {
 
     try {
       const res = await fetch(`${url}/document`, {
-        mode: 'no-cors',
         method: "POST",
         body: formData
       })
 
-      if (res.ok) {
-        console.log("Perfect! ");
-      } else {
-        console.log("Oops! ");
-      }
+      // const status = await res.status
+      // if (status !== 200) {
+      //   console.log("Error");
+      // }
+
+      const text = await res.text()
+      console.log(text)
     }
     catch (e) {
       console.log("Error submitting form!");

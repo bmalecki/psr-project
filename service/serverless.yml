@@ -32,6 +32,7 @@ functions:
       - http:
           path: document
           method: post
+          cors: true
   after_upload:
     handler: bin/triggerS3
     events:

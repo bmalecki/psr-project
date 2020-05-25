@@ -33,12 +33,9 @@ var bucketId string
 var tableName string
 
 func init() {
-	sess, err := session.NewSession(&aws.Config{
+	sess := session.Must(session.NewSession(&aws.Config{
 		Region: aws.String("us-east-1")},
-	)
-	if err != nil {
-		panic(err)
-	}
+	))
 
 	svcS3 = s3.New(sess)
 	uploader = s3manager.NewUploader(sess)
@@ -119,8 +116,8 @@ func createResponse(statusCode int, msg string) Response {
 		StatusCode: statusCode,
 		Body:       msg,
 		Headers: map[string]string{
-			"Content-Type":                "plain/text",
-			"Access-Control-Allow-Origin": "*",
+			"Content-Type":                     "plain/text",
+			"Access-Control-Allow-Origin":      "*",
 			"Access-Control-Allow-Credentials": "true",
 		},
 	}

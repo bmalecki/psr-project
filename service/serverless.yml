@@ -50,6 +50,21 @@ functions:
     events:
       - sqs:
           arn: !GetAtt TextractQueue.Arn
+  list:
+    handler: bin/list
+    events:
+      - http:
+          path: document
+          method: get
+          cors: true
+      - http:
+          path: document/{id}
+          method: get
+          cors: true
+          request:
+            parameters:
+              paths:
+                id: true
 
 resources:
   - ${file(config/resources/default-role.yml)}

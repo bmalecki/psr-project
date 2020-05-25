@@ -21,10 +21,10 @@ function UploadForm() {
         body: formData
       })
 
-      // const status = await res.status
-      // if (status !== 200) {
-      //   console.log("Error");
-      // }
+      const status = await res.status
+      if (status !== 200) {
+        console.log("Error");
+      }
 
       const text = await res.text()
       console.log(text)

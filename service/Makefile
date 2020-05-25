@@ -3,6 +3,7 @@
 build: gomodgen
 	export GO111MODULE=on
 	env GOOS=linux go build -ldflags="-s -w" -o bin/uploadS3 uploadS3/main.go
+	env GOOS=linux go build -ldflags="-s -w" -o bin/list list/main.go
 	env GOOS=linux go build -ldflags="-s -w" -o bin/triggerS3 triggerS3/main.go
 	env GOOS=linux go build -ldflags="-s -w" -o bin/analyze analyze/main.go
 	env GOOS=linux go build -ldflags="-s -w" -o bin/afteranalyze afteranalyze/main.go afteranalyze/models.go

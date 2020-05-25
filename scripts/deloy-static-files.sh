@@ -1,4 +1,5 @@
 #!/bin/bash
+export AWS_DEFAULT_REGION=us-east-1
 export API_GATEWAY_ID=$(aws apigateway get-rest-apis --output text --query 'items[?name == `dev-uploadservice`].id')
 export REACT_APP_URL='https://'${API_GATEWAY_ID}'.execute-api.us-east-1.amazonaws.com/dev'
 (cd web && npm install && npm run build)

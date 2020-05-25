@@ -39,3 +39,8 @@ steps:
 - script: |
     ./scripts/deloy-static-files.sh
   displayName: Build and deploy frontend app
+
+- script: |
+    cd terraform
+    terraform output static_website_endpoint_url
+  displayName: Website url

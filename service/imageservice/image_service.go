@@ -108,7 +108,7 @@ func (it *ImageTableService) AddOccurredForbiddenWordsToItem(id string, occurred
 	return nil
 }
 
-func (it *ImageTableService) GetForbiddenWords(id string) ([]string, error) {
+func (it *ImageTableService) GetImageItemById(id string) (*ImageItem, error) {
 	result, err := it.svcDb.GetItem(&dynamodb.GetItemInput{
 		TableName: aws.String(it.tableName),
 		Key: map[string]*dynamodb.AttributeValue{
@@ -129,8 +129,12 @@ func (it *ImageTableService) GetForbiddenWords(id string) ([]string, error) {
 		return nil, err
 	}
 
-	return item.ForbiddenWords, nil
+	return &item, nil
+}
 
+func (it *ImageTableService) GetForbiddenWords(id string) ([]string, error) {
+	item, err := it.GetImageItemById(id)
+	return item.ForbiddenWords, err
 }
 
 func (it *ImageTableService) ProcessingImageStatusItem(id string) error {

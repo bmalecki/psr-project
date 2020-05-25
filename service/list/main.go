@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"os"
 
@@ -35,7 +36,7 @@ func createResponse(statusCode int, msg string) Response {
 		StatusCode: statusCode,
 		Body:       msg,
 		Headers: map[string]string{
-			"Content-Type":                     "plain/text",
+			"Content-Type":                     "application/json",
 			"Access-Control-Allow-Origin":      "*",
 			"Access-Control-Allow-Credentials": "true",
 		},
@@ -47,7 +48,21 @@ func Handler(ctx context.Context, req Reqeust) (Response, error) {
 
 	fmt.Println(id)
 
-	return createResponse(200, "ok"), nil
+	imageItem, err := imageTableService.GetImageItemById(id)
+
+	if err != nil {
+		fmt.Println(err.Error())
+		return createResponse(500, ""), err
+	}
+
+	imageItemJson, err := json.Marshal(imageItem)
+
+	if err != nil {
+		fmt.Println(err.Error())
+		return createResponse(500, ""), err
+	}
+
+	return createResponse(200, string(imageItemJson)), nil
 }
 
 func main() {

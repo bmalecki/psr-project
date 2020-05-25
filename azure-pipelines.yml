@@ -37,7 +37,5 @@ steps:
   displayName: Deploy lambda
 
 - script: |
-    cd web
-    npm install
-    npm run deploy
-  displayName: Build frontend app
+    ./scripts/deloy-static-files.sh
+  displayName: Build and deploy frontend app

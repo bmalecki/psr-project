@@ -69,10 +69,10 @@ func uploadS3(bucketId, fileExtension string, bodyReader io.Reader) (string, err
 }
 
 type FromData struct {
-	FileReader    io.Reader
-	FileName      string
-	FileExtension string
-	Words         []string
+	FileReader     io.Reader
+	FileName       string
+	FileExtension  string
+	ForbiddenWords []string
 }
 
 func parseMultipartForm(contentType string, reader io.Reader) (*FromData, error) {
@@ -108,8 +108,8 @@ func parseMultipartForm(contentType string, reader io.Reader) (*FromData, error)
 			} else {
 				return nil, fmt.Errorf("File is not an image")
 			}
-		case "words":
-			formData.Words = strings.Split(string(slurp), ",")
+		case "forbiddenWords":
+			formData.ForbiddenWords = strings.Split(string(slurp), ",")
 		}
 	}
 }
@@ -150,7 +150,7 @@ func Handler(ctx context.Context, req Reqeust) (Response, error) {
 		return createResponse(500, uploadErr.Error()), nil
 	}
 
-	if err := imageTableService.CreateImageTableItem(objectId, formData.FileName, formData.Words); err != nil {
+	if err := imageTableService.CreateImageTableItem(objectId, formData.FileName, formData.ForbiddenWords); err != nil {
 		return createResponse(500, err.Error()), nil
 	}
 

@@ -9,11 +9,12 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 )
 
-type imageItem struct {
-	Id          string
-	ImageStatus string
-	Name        string
-	Words       []string
+type ImageItem struct {
+	Id                     string
+	ImageStatus            string
+	Name                   string
+	ForbiddenWords         []string
+	occurredForbiddenWords []string
 }
 
 type ImageTableService struct {
@@ -28,12 +29,12 @@ func New(sess *session.Session, tableName string) *ImageTableService {
 	}
 }
 
-func (it *ImageTableService) CreateImageTableItem(id, name string, words []string) error {
-	item := imageItem{
-		Id:          id,
-		ImageStatus: "NEW",
-		Name:        name,
-		Words:       words,
+func (it *ImageTableService) CreateImageTableItem(id, name string, forbiddenWords []string) error {
+	item := ImageItem{
+		Id:             id,
+		ImageStatus:    "NEW",
+		Name:           name,
+		ForbiddenWords: forbiddenWords,
 	}
 
 	av, err := dynamodbattribute.MarshalMap(item)
@@ -74,6 +75,62 @@ func (it *ImageTableService) updateImageTableItem(id, column, value string) erro
 		return err
 	}
 	return nil
+}
+
+func (it *ImageTableService) AddOccurredForbiddenWordsToItem(id string, occurredForbiddenWords []string) error {
+	var occurredForbiddenWordsAV []*dynamodb.AttributeValue
+
+	for _, ofw := range occurredForbiddenWords {
+		av := &dynamodb.AttributeValue{
+			S: aws.String(ofw),
+		}
+		occurredForbiddenWordsAV = append(occurredForbiddenWordsAV, av)
+	}
+
+	input := &dynamodb.UpdateItemInput{
+		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
+			":s": {
+				L: occurredForbiddenWordsAV,
+			},
+		},
+		TableName: aws.String(it.tableName),
+		Key: map[string]*dynamodb.AttributeValue{
+			"Id": {
+				S: aws.String(id),
+			},
+		},
+		UpdateExpression: aws.String(fmt.Sprintf("set %s = :s", "OccurredForbiddenWords")),
+	}
+
+	if _, err := it.svcDb.UpdateItem(input); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (it *ImageTableService) GetForbiddenWords(id string) ([]string, error) {
+	result, err := it.svcDb.GetItem(&dynamodb.GetItemInput{
+		TableName: aws.String(it.tableName),
+		Key: map[string]*dynamodb.AttributeValue{
+			"Id": {
+				S: aws.String(id),
+			},
+		},
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	item := ImageItem{}
+
+	err = dynamodbattribute.UnmarshalMap(result.Item, &item)
+	if err != nil {
+		return nil, err
+	}
+
+	return item.ForbiddenWords, nil
+
 }
 
 func (it *ImageTableService) ProcessingImageStatusItem(id string) error {

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -45,12 +46,12 @@ func parseRecord(recordBody, nextToken *string) (*textract.GetDocumentTextDetect
 }
 
 func Handler(ctx context.Context, sqsEvent events.SQSEvent) error {
+
 	for _, record := range sqsEvent.Records {
-
-		fmt.Printf("record: %s \n", record.Body)
-
-		var fileName string
+		var imageId string
 		var next *string
+		var forbiddenWords []string
+		occurredForbiddenWordsMap := make(map[string]bool)
 
 		for {
 			input, documentLocation, errInput := parseRecord(&record.Body, next)
@@ -63,12 +64,23 @@ func Handler(ctx context.Context, sqsEvent events.SQSEvent) error {
 				return err
 			}
 
+			if len(imageId) == 0 {
+				imageId = documentLocation
+				forbiddenWords, err = imageTableSvc.GetForbiddenWords(imageId)
+			}
+			if err != nil {
+				return err
+			}
+
 			next = output.NextToken
-			fileName = documentLocation
 
 			for _, block := range output.Blocks {
-				if block.Text != nil && block.Confidence != nil {
-					fmt.Printf("Text: %v | confidence: %v", *block.Text, *block.Confidence)
+				if block.Text != nil && block.Confidence != nil && *block.Confidence > 75 {
+					for _, forbiddenWord := range forbiddenWords {
+						if strings.Contains(*block.Text, forbiddenWord) {
+							occurredForbiddenWordsMap[forbiddenWord] = true
+						}
+					}
 				}
 			}
 
@@ -77,7 +89,16 @@ func Handler(ctx context.Context, sqsEvent events.SQSEvent) error {
 			}
 		}
 
-		if err := imageTableSvc.ReadyImageStatusItem(fileName); err != nil {
+		var occurredForbiddenWords []string
+		for k := range occurredForbiddenWordsMap {
+			occurredForbiddenWords = append(occurredForbiddenWords, k)
+		}
+
+		if err := imageTableSvc.AddOccurredForbiddenWordsToItem(imageId, occurredForbiddenWords); err != nil {
+			return err
+		}
+
+		if err := imageTableSvc.ReadyImageStatusItem(imageId); err != nil {
 			return err
 		}
 	}

@@ -13,7 +13,7 @@ function UploadForm() {
     const file = inputFile.current.files[0];
 
     formData.append("file", file)
-    formData.append("words", forbiddenWords.current.value)
+    formData.append("forbiddenWords", forbiddenWords.current.value)
 
     try {
       const res = await fetch(`${url}/document`, {

@@ -14,9 +14,21 @@ func TestDynamoDb(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	imageTableService := New(sess, "uploadservice-dev-ImageTable-1UOQKMF3IKZAI")
+	imageTableService := New(sess, "uploadservice-dev-ImageTable-P9ENBK0K06ZA")
 
-	if err := imageTableService.ProcessingImageStatusItem("cab9b42b-2141-4e20-89ca-fe000e33b483.png"); err != nil {
-		t.Errorf("%v", err)
-	}
+	imageId := "f706094e-4681-4129-9350-74454c26a03b.png"
+
+	// forbiddenWords, err := imageTableService.GetForbiddenWords(imageId)
+	// if err != nil {
+	// 	t.Errorf("%v", err)
+	// }
+
+	// fmt.Printf("%v\n", forbiddenWords)
+
+	var ofws []string
+	ofws = append(ofws, "aad")
+	ofws = append(ofws, "sada")
+	ofws = append(ofws, "fdsaf")
+
+	imageTableService.AddOccurredForbiddenWordsToItem(imageId, ofws)
 }

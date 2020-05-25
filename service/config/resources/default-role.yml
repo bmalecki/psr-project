@@ -66,6 +66,7 @@ Resources:
                   - "dynamodb:PutItem"
                   - "dynamodb:Scan"
                   - "dynamodb:UpdateItem"
+                  - "dynamodb:GetItem"
                 Resource:
                   - !GetAtt ImageTable.Arn
 

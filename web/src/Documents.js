@@ -1,31 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { url } from './environment'
+import React, { useContext } from 'react';
+import { DocumentsContext } from './context/DocumentsContextProvider';
 
 import "./Documents.css"
 
 function Documents() {
-  const [documents, setDocuments] = useState([]);
-
-  useEffect(() => {
-    async function getDocuments() {
-      try {
-        const res = await fetch(`${url}/document`)
-
-        const status = await res.status
-        if (status !== 200) {
-          console.log("Error");
-        }
-
-        const json = await res.json()
-        setDocuments(json)
-      }
-      catch (e) {
-        console.log("Error getting documents!");
-      }
-    }
-
-    getDocuments()
-  }, []);
+  const { documents } = useContext(DocumentsContext);
 
   return (
     <div className="Documents">

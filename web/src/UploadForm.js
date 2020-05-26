@@ -1,33 +1,51 @@
-import React, { useRef } from 'react';
+import React, { useRef, useContext } from 'react';
 import { url } from './environment'
+import { DocumentsContext } from './context/DocumentsContextProvider';
+
+async function postImageForm(formData) {
+  const res = await fetch(`${url}/document`, {
+    method: "POST",
+    body: formData
+  })
+
+  const status = await res.status
+  if (status !== 200) {
+    console.log("Error");
+  }
+
+  return res.text()
+}
+
+async function getImageItem(id) {
+  const res = await fetch(`${url}/document/${id}`)
+
+  const status = await res.status
+  if (status !== 200) {
+    console.log("Error");
+  }
+
+  return res.json()
+}
 
 function UploadForm() {
+  const { dispatch } = useContext(DocumentsContext);
+
 
   const inputFile = useRef(null);
   const forbiddenWords = useRef(null);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
     let formData = new FormData();
-
-    const file = inputFile.current.files[0];
-
-    formData.append("file", file)
+    formData.append("file", inputFile.current.files[0])
     formData.append("forbiddenWords", forbiddenWords.current.value)
 
     try {
-      const res = await fetch(`${url}/document`, {
-        method: "POST",
-        body: formData
-      })
+      const id = await postImageForm(formData)
+      const item = await getImageItem(id)
+      dispatch({ type: "ADD_ITEM", item })
 
-      const status = await res.status
-      if (status !== 200) {
-        console.log("Error");
-      }
-
-      const text = await res.text()
-      console.log(text)
     }
     catch (e) {
       console.log("Error submitting form!");

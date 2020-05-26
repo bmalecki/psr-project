@@ -41,19 +41,18 @@ function Documents() {
           </tr>
           {
             documents.map(v =>
-              <tr>
+              <tr key={v["Id"]}>
                 <td>{v["Id"]}</td>
                 <td>{v["Name"]}</td>
                 <td>{v["ImageStatus"]}</td>
                 <td>
                   <ul>
-                    {v["ForbiddenWords"].map(words => <li>{words}</li>)}
+                    {v["ForbiddenWords"].map(words => <li key={words}>{words}</li>)}
                   </ul>
                 </td>
                 <td>
                   <ul>
-                  {v["OccurredForbiddenWords"] && v["OccurredForbiddenWords"].map(words => <li>{words}</li>)}
-
+                    {v["OccurredForbiddenWords"] && v["OccurredForbiddenWords"].map(words => <li key={words}>{words}</li>)}
                   </ul>
                 </td>
               </tr>

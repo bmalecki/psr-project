@@ -36,7 +36,7 @@ function UploadForm() {
 
   return (
     <div className="UploadForm">
-      <h1>Upload document</h1>
+      <h2>Upload document</h2>
       <form onSubmit={handleSubmit}>
         <label htmlFor="documentFile">Select a file: </label>
         <input type="file" id="documentFile" ref={inputFile} required></input>

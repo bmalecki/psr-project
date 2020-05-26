@@ -6,6 +6,7 @@ import Documents from './Documents';
 function App() {
   return (
     <div className="App">
+      <h1>My Application</h1>
       <UploadForm />
       <Documents />
     </div>

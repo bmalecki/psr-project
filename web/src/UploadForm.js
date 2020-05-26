@@ -28,8 +28,8 @@ async function getImageItem(id) {
 }
 
 function UploadForm() {
-  const { dispatch } = useContext(DocumentsContext);
-
+  const { state, dispatch } = useContext(DocumentsContext);
+  const { uploading } = state;
 
   const inputFile = useRef(null);
   const forbiddenWords = useRef(null);
@@ -42,10 +42,11 @@ function UploadForm() {
     formData.append("forbiddenWords", forbiddenWords.current.value)
 
     try {
+      dispatch({ type: "UPLOADING_START" })
       const id = await postImageForm(formData)
       const item = await getImageItem(id)
       dispatch({ type: "ADD_ITEM", item })
-
+      dispatch({ type: "UPLOADING_END" })
     }
     catch (e) {
       console.log("Error submitting form!");
@@ -62,7 +63,7 @@ function UploadForm() {
         <label htmlFor="forbiddenWords">Forbidden Words: </label>
         <input type="text" id="forbiddenWords" ref={forbiddenWords} required></input>
         <br />
-        <input type="submit" value="Submit" />
+        <input type="submit" value="Submit" disabled={uploading} />
       </form>
     </div>
   );

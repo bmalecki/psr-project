@@ -3,45 +3,68 @@ import { url } from '../environment'
 
 export const DocumentsContext = createContext();
 
-const initialState = [];
+const initialState = {
+    uploading: false,
+    documents: []
+};
 
 function reducer(state, action) {
     switch (action.type) {
         case 'ADD_ITEM':
-            return [action.item, ...state];
+            return {
+                ...state,
+                documents: [action.item, ...state.documents]
+            };
         case 'REFRESH_FROM_SERVER':
-            return [...action.items];
+            return {
+                ...state,
+                documents: [...action.documents]
+            };
+        case 'UPLOADING_START':
+            return {
+                ...state,
+                uploading: true
+            }
+        case 'UPLOADING_END':
+            return {
+                ...state,
+                uploading: false
+            }
         default:
             throw new Error();
     }
 }
 
-export const DocumentsContextProvider = props => {
-    const [documents, dispatch] = useReducer(reducer, initialState);
+async function getDocuments() {
+    try {
+        const res = await fetch(`${url}/document`)
 
-    useEffect(() => {
-        async function getDocuments() {
-            try {
-                const res = await fetch(`${url}/document`)
-
-                const status = await res.status
-                if (status !== 200) {
-                    console.log("Error");
-                }
-
-                const json = await res.json()
-                dispatch({ type: "REFRESH_FROM_SERVER", items: json })
-            }
-            catch (e) {
-                console.log("Error getting documents!");
-            }
+        const status = await res.status
+        if (status !== 200) {
+            console.log("Error");
         }
 
-        getDocuments()
+        return await res.json()
+    }
+    catch (e) {
+        console.log("Error getting documents!");
+    }
+}
+
+export const DocumentsContextProvider = props => {
+    const [state, dispatch] = useReducer(reducer, initialState);
+
+    useEffect(() => {
+        async function AsyncFunction() {
+            const documents = await getDocuments()
+            dispatch({ type: "REFRESH_FROM_SERVER", documents })
+        }
+
+        AsyncFunction()
     }, []);
 
     return (
-        <DocumentsContext.Provider value={{documents, dispatch}}>
+        <DocumentsContext.Provider value={{ state, dispatch }}>
             {props.children}
         </DocumentsContext.Provider>
     );

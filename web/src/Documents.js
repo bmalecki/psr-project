@@ -4,7 +4,8 @@ import { DocumentsContext } from './context/DocumentsContextProvider';
 import "./Documents.css"
 
 function Documents() {
-  const { documents } = useContext(DocumentsContext);
+  const { state } = useContext(DocumentsContext);
+  const { documents } = state
 
   return (
     <div className="Documents">

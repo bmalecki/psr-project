@@ -36,18 +36,20 @@ function Documents() {
             <th>Id</th>
             <th>Name</th>
             <th>Image status</th>
+            <th>Date</th>
             <th>Forbidden words</th>
             <th>Detected forbidden words</th>
           </tr>
           {
-            documents.map(v =>
+            documents != null && documents.map(v =>
               <tr key={v["Id"]}>
                 <td>{v["Id"]}</td>
                 <td>{v["Name"]}</td>
                 <td>{v["ImageStatus"]}</td>
+                <td>{v["Timestamp"]}</td>
                 <td>
                   <ul>
-                    {v["ForbiddenWords"].map(words => <li key={words}>{words}</li>)}
+                    {v["ForbiddenWords"] && v["ForbiddenWords"].map(words => <li key={words}>{words}</li>)}
                   </ul>
                 </td>
                 <td>

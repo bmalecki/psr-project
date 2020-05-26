@@ -2,6 +2,7 @@ package imageservice
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -15,6 +16,7 @@ type ImageItem struct {
 	Name                   string
 	ForbiddenWords         []string
 	OccurredForbiddenWords []string
+	Timestamp              string
 }
 
 type ImageTableService struct {
@@ -35,6 +37,7 @@ func (it *ImageTableService) CreateImageTableItem(id, name string, forbiddenWord
 		ImageStatus:    "NEW",
 		Name:           name,
 		ForbiddenWords: forbiddenWords,
+		Timestamp:      time.Now().UTC().String(),
 	}
 
 	av, err := dynamodbattribute.MarshalMap(item)

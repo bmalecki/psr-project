@@ -1,8 +1,6 @@
 package imageservice
 
 import (
-	"encoding/json"
-	"fmt"
 	"testing"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -18,7 +16,12 @@ func TestDynamoDb(t *testing.T) {
 	}
 	imageTableService := New(sess, "uploadservice-dev-ImageTable-P9ENBK0K06ZA")
 
-	// imageId := "f706094e-4681-4129-9350-74454c26a03b.png"
+	imageId := "265fdcf7-da9f-4101-9d59-e11306c03906.png"
+
+	err = imageTableService.ProcessingImageStatusItem(imageId)
+	if err != nil {
+		t.Errorf("%v", err)
+	}
 
 	// forbiddenWords, err := imageTableService.GetForbiddenWords(imageId)
 	// if err != nil {
@@ -34,12 +37,12 @@ func TestDynamoDb(t *testing.T) {
 
 	// imageTableService.AddOccurredForbiddenWordsToItem(imageId, ofws)
 
-	imageItemList, err := imageTableService.GetAllImageItems()
+	// imageItemList, err := imageTableService.GetAllImageItems()
 
-	if err != nil {
-		fmt.Println(err.Error())
-	}
-	imageItemJson, err := json.Marshal(imageItemList)
+	// if err != nil {
+	// 	fmt.Println(err.Error())
+	// }
+	// imageItemJson, err := json.Marshal(imageItemList)
 
-	fmt.Println(string(imageItemJson))
+	// fmt.Println(string(imageItemJson))
 }

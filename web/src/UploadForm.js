@@ -46,10 +46,11 @@ function UploadForm() {
       const id = await postImageForm(formData)
       const item = await getImageItem(id)
       dispatch({ type: "ADD_ITEM", item })
-      dispatch({ type: "UPLOADING_END" })
     }
     catch (e) {
       console.log("Error submitting form!");
+    } finally {
+      dispatch({ type: "UPLOADING_END" })
     }
   }
 

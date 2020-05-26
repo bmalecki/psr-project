@@ -11,12 +11,13 @@ import (
 )
 
 type ImageItem struct {
+	UserId                 string
 	Id                     string
 	ImageStatus            string
-	Name                   string
+	FileName               string
 	ForbiddenWords         []string
 	OccurredForbiddenWords []string
-	Timestamp              string
+	InsertionDate          string
 }
 
 type ImageTableService struct {
@@ -33,11 +34,12 @@ func New(sess *session.Session, tableName string) *ImageTableService {
 
 func (it *ImageTableService) CreateImageTableItem(id, name string, forbiddenWords []string) error {
 	item := ImageItem{
+		UserId:         "Anonymous",
 		Id:             id,
 		ImageStatus:    "NEW",
-		Name:           name,
+		FileName:       name,
 		ForbiddenWords: forbiddenWords,
-		Timestamp:      time.Now().UTC().String(),
+		InsertionDate:  time.Now().UTC().String(),
 	}
 
 	av, err := dynamodbattribute.MarshalMap(item)
@@ -140,13 +142,20 @@ func (it *ImageTableService) GetImageItemById(id string) (*ImageItem, error) {
 }
 
 func (it *ImageTableService) GetAllImageItems() ([]*ImageItem, error) {
-	params := &dynamodb.ScanInput{
+	result, err := it.svcDb.Query(&dynamodb.QueryInput{
 		TableName: aws.String(it.tableName),
-	}
+		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
+			":v1": {
+				S: aws.String("Anonymous"),
+			},
+		},
+		KeyConditionExpression: aws.String("UserId = :v1"),
+		ProjectionExpression:   aws.String("Id, InsertionDate, ImageStatus, FileName, ForbiddenWords, OccurredForbiddenWords"),
+		IndexName:              aws.String("UserIdInsertionDateIndex"),
+		ScanIndexForward:       aws.Bool(false),
+	})
 
-	result, err := it.svcDb.Scan(params)
 	if err != nil {
-		fmt.Println((err.Error()))
 		return nil, err
 	}
 

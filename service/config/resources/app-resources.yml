@@ -41,18 +41,20 @@ Resources:
       AttributeDefinitions:
         - AttributeName: Id
           AttributeType: S
-        - AttributeName: Timestamp
+        - AttributeName: InsertionDate
+          AttributeType: S
+        - AttributeName: UserId
           AttributeType: S
       KeySchema:
         - AttributeName: Id
           KeyType: HASH
       GlobalSecondaryIndexes:
-        - IndexName: TimestampIndex
+        - IndexName: UserIdInsertionDateIndex
           KeySchema:
-            - AttributeName: Id
+            - AttributeName: UserId
               KeyType: HASH
-            - AttributeName: Timestamp
+            - AttributeName: InsertionDate
               KeyType: RANGE
           Projection: 
-            ProjectionType: KEYS_ONLY
+            ProjectionType: ALL
       BillingMode: PAY_PER_REQUEST

@@ -44,9 +44,9 @@ function Documents() {
             documents != null && documents.map(v =>
               <tr key={v["Id"]}>
                 <td>{v["Id"]}</td>
-                <td>{v["Name"]}</td>
+                <td>{v["FileName"]}</td>
                 <td>{v["ImageStatus"]}</td>
-                <td>{v["Timestamp"]}</td>
+                <td>{v["InsertionDate"]}</td>
                 <td>
                   <ul>
                     {v["ForbiddenWords"] && v["ForbiddenWords"].map(words => <li key={words}>{words}</li>)}

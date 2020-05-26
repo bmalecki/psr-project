@@ -80,6 +80,10 @@ func (it *ImageTableService) updateImageTableItem(id, column, value string) erro
 func (it *ImageTableService) AddOccurredForbiddenWordsToItem(id string, occurredForbiddenWords []string) error {
 	var occurredForbiddenWordsAV []*dynamodb.AttributeValue
 
+	if len(occurredForbiddenWords) == 0 {
+		return nil
+	}
+
 	for _, ofw := range occurredForbiddenWords {
 		av := &dynamodb.AttributeValue{
 			S: aws.String(ofw),

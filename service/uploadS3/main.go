@@ -44,18 +44,19 @@ func init() {
 	imageTableService = imageservice.New(sess, os.Getenv("IMAGE_TABLE"))
 }
 
-func uploadS3(bucketId, fileExtension string, bodyReader io.Reader) (string, error) {
+func uploadS3(bucketId string, formData *FromData) (string, error) {
 	fileUuid, errUuid := uuid.NewRandom()
-	uploadedFileName := fmt.Sprintf("%s.%s", fileUuid.String(), fileExtension)
+	uploadedFileName := fmt.Sprintf("%s.%s", fileUuid.String(), formData.FileExtension)
 
 	if errUuid != nil {
 		return "", fmt.Errorf("Unable to create random file name")
 	}
 
 	_, err := uploader.Upload(&s3manager.UploadInput{
-		Bucket: aws.String(bucketId),
-		Key:    aws.String(uploadedFileName),
-		Body:   bodyReader,
+		Bucket:      aws.String(bucketId),
+		Key:         aws.String(uploadedFileName),
+		Body:        formData.FileReader,
+		ContentType: aws.String(formData.ContentType),
 	})
 
 	if err != nil {
@@ -68,6 +69,7 @@ func uploadS3(bucketId, fileExtension string, bodyReader io.Reader) (string, err
 type FromData struct {
 	FileReader     io.Reader
 	FileName       string
+	ContentType    string
 	FileExtension  string
 	ForbiddenWords []string
 }
@@ -102,6 +104,7 @@ func parseMultipartForm(contentType string, reader io.Reader) (*FromData, error)
 				formData.FileReader = bytes.NewReader(slurp)
 				formData.FileName = params["filename"]
 				formData.FileExtension = strings.TrimPrefix(p.Header.Get("Content-Type"), "image/")
+				formData.ContentType = p.Header.Get("Content-Type")
 			} else {
 				return nil, fmt.Errorf("File is not an image")
 			}
@@ -143,7 +146,7 @@ func Handler(ctx context.Context, req Reqeust) (Response, error) {
 		return createResponse(500, formErr.Error()), nil
 	}
 
-	objectId, uploadErr := uploadS3(bucketId, formData.FileExtension, formData.FileReader)
+	objectId, uploadErr := uploadS3(bucketId, formData)
 
 	if uploadErr != nil {
 		return createResponse(500, uploadErr.Error()), nil

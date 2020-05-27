@@ -1,4 +1,4 @@
-import React, { useRef, useContext, useState, createRef } from 'react';
+import React, { useRef, useContext, useState, createRef, useEffect } from 'react';
 import { url } from './environment'
 import { DocumentsContext } from './context/DocumentsContextProvider';
 
@@ -35,7 +35,7 @@ function UploadForm() {
   const inputFile = useRef(null);
   const [forbiddenWords, setForbiddenWords] = React.useState([]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setForbiddenWords(elRefs => (
       Array(forbiddenWordsInput).fill().map((_, i) => elRefs[i] || createRef())
     ));

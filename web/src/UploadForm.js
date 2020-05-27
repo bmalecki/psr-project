@@ -1,4 +1,4 @@
-import React, { useRef, useContext } from 'react';
+import React, { useRef, useContext, useState, createRef } from 'react';
 import { url } from './environment'
 import { DocumentsContext } from './context/DocumentsContextProvider';
 
@@ -28,18 +28,29 @@ async function getImageItem(id) {
 }
 
 function UploadForm() {
+  const [forbiddenWordsInput, setForbiddenWordsInput] = useState(1)
   const { state, dispatch } = useContext(DocumentsContext);
   const { uploading } = state;
 
   const inputFile = useRef(null);
-  const forbiddenWords = useRef(null);
+  const [forbiddenWords, setForbiddenWords] = React.useState([]);
+
+  React.useEffect(() => {
+    setForbiddenWords(elRefs => (
+      Array(forbiddenWordsInput).fill().map((_, i) => elRefs[i] || createRef())
+    ));
+  }, [forbiddenWordsInput]);
+
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     let formData = new FormData();
     formData.append("file", inputFile.current.files[0])
-    formData.append("forbiddenWords", forbiddenWords.current.value)
+
+    forbiddenWords.forEach((ref => {
+      formData.append("forbiddenWords", ref.current.value)
+    }))
 
     try {
       dispatch({ type: "UPLOADING_START" })
@@ -54,6 +65,18 @@ function UploadForm() {
     }
   }
 
+  const addInput = (event) => {
+    event.preventDefault();
+    setForbiddenWordsInput(forbiddenWordsInput + 1)
+  }
+
+  const removeInput = (event) => {
+    event.preventDefault();
+    if (forbiddenWordsInput > 1) {
+      setForbiddenWordsInput(forbiddenWordsInput - 1)
+    }
+  }
+
   return (
     <div className="UploadForm">
       <h2>Upload document</h2>
@@ -62,7 +85,12 @@ function UploadForm() {
         <input type="file" id="documentFile" ref={inputFile} required></input>
         <br />
         <label htmlFor="forbiddenWords">Forbidden Words: </label>
-        <input type="text" id="forbiddenWords" ref={forbiddenWords} required></input>
+
+        {[...Array(forbiddenWordsInput)].map((_, i) =>
+          <React.Fragment key={i}><br /><input type="text" id="forbiddenWords" ref={forbiddenWords[i]} required></input></React.Fragment>)}
+
+        <button onClick={addInput}>+</button>
+        <button onClick={removeInput} disabled={forbiddenWordsInput < 2}>-</button>
         <br />
         <input type="submit" value="Submit" disabled={uploading} />
       </form>

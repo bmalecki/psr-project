@@ -106,7 +106,7 @@ func parseMultipartForm(contentType string, reader io.Reader) (*FromData, error)
 				return nil, fmt.Errorf("File is not an image")
 			}
 		case "forbiddenWords":
-			formData.ForbiddenWords = strings.Split(string(slurp), ",")
+			formData.ForbiddenWords = append(formData.ForbiddenWords, string(slurp))
 		}
 	}
 }

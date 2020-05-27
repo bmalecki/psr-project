@@ -5,7 +5,7 @@ import { useInterval } from "../intervalHook";
 export const DocumentsContext = createContext();
 
 const FAST_REFRESHING = 10000;
-const SLOW_REFRESHING = 60000;
+const SLOW_REFRESHING = null;
 
 const initialState = {
     uploading: false,

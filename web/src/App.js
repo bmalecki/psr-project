@@ -8,7 +8,7 @@ import Uploading from './Uploading';
 function App() {
   return (
     <div className="App">
-      <h1>My Application</h1>
+      <h1>Forbidden Words Detector</h1>
       <DocumentsContextProvider>
         <UploadForm />
         <Uploading />

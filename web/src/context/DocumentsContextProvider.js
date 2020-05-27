@@ -1,11 +1,16 @@
 import React, { useReducer, createContext, useEffect } from "react";
 import { url } from '../environment'
+import { useInterval } from "../intervalHook";
 
 export const DocumentsContext = createContext();
 
+const FAST_REFRESHING = 10000;
+const SLOW_REFRESHING = 60000;
+
 const initialState = {
     uploading: false,
-    documents: []
+    documents: [],
+    refreshing: SLOW_REFRESHING
 };
 
 function reducer(state, action) {
@@ -13,6 +18,7 @@ function reducer(state, action) {
         case 'ADD_ITEM':
             return {
                 ...state,
+                refreshing: FAST_REFRESHING,
                 documents: [action.item, ...state.documents]
             };
         case 'REFRESH_FROM_SERVER':
@@ -29,6 +35,16 @@ function reducer(state, action) {
             return {
                 ...state,
                 uploading: false
+            }
+        case 'INCREASE_REFRESH_RATE':
+            return {
+                ...state,
+                refreshing: FAST_REFRESHING
+            }
+        case 'DECREASE_REFRESH_RATE':
+            return {
+                ...state,
+                refreshing: SLOW_REFRESHING
             }
         default:
             throw new Error();
@@ -54,14 +70,31 @@ async function getDocuments() {
 export const DocumentsContextProvider = props => {
     const [state, dispatch] = useReducer(reducer, initialState);
 
-    useEffect(() => {
-        async function AsyncFunction() {
-            const documents = await getDocuments()
-            dispatch({ type: "REFRESH_FROM_SERVER", documents })
-        }
+    async function AsyncGetDocuments() {
+        const documents = await getDocuments()
+        dispatch({ type: "REFRESH_FROM_SERVER", documents })
 
-        AsyncFunction()
+        const notAllReady = documents
+            .map(i => i["ImageStatus"])
+            .some(s => s !== "READY");
+
+        if (notAllReady) {
+            dispatch({ type: "INCREASE_REFRESH_RATE" })
+        }
+        if (state.refreshing === FAST_REFRESHING && notAllReady === false) {
+            dispatch({ type: "DECREASE_REFRESH_RATE" })
+        }
+    }
+
+    useEffect(() => {
+        AsyncGetDocuments()
+        // eslint-disable-next-line 
     }, []);
+
+
+    useInterval(() => {
+        AsyncGetDocuments()
+    }, state.refreshing)
 
     return (
         <DocumentsContext.Provider value={{ state, dispatch }}>

@@ -16,14 +16,17 @@ async function deleteImageItem(id) {
 }
 
 function Documents() {
-  const { state, dispatch } = useContext(DocumentsContext);
+  const { state, AsyncGetDocuments } = useContext(DocumentsContext);
   const { documents } = state
 
   const removeItem = async (event, id) => {
     event.target.disabled = true;
-    dispatch({ type: "INCREASE_REFRESH_RATE" })
-    await deleteImageItem(id)
-    dispatch({ type: "DECREASE_REFRESH_RATE" })
+    try {
+      await deleteImageItem(id)
+      await AsyncGetDocuments()
+    } catch (e) {
+      console.log(e)
+    }
   }
 
   return (

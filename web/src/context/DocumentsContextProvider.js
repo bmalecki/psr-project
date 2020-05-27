@@ -97,7 +97,7 @@ export const DocumentsContextProvider = props => {
     }, state.refreshing)
 
     return (
-        <DocumentsContext.Provider value={{ state, dispatch }}>
+        <DocumentsContext.Provider value={{ state, dispatch, AsyncGetDocuments }}>
             {props.children}
         </DocumentsContext.Provider>
     );

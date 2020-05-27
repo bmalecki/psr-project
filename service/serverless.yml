@@ -40,6 +40,17 @@ functions:
           bucket: !Ref UploadImageStorage
           event: s3:ObjectCreated:*
           existing: true
+  remove:
+    handler: bin/removeS3
+    events:
+      - http:
+          path: document/{id}
+          method: delete
+          cors: true
+          request:
+            parameters:
+              paths:
+                id: true
   analyze:
     handler: bin/analyze
     events:

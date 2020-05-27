@@ -141,6 +141,23 @@ func (it *ImageTableService) GetImageItemById(id string) (*ImageItem, error) {
 	return &item, nil
 }
 
+func (it *ImageTableService) DeleteImageItemById(id string) error {
+	_, err := it.svcDb.DeleteItem(&dynamodb.DeleteItemInput{
+		TableName: aws.String(it.tableName),
+		Key: map[string]*dynamodb.AttributeValue{
+			"Id": {
+				S: aws.String(id),
+			},
+		},
+	})
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (it *ImageTableService) GetAllImageItems() ([]*ImageItem, error) {
 	result, err := it.svcDb.Query(&dynamodb.QueryInput{
 		TableName: aws.String(it.tableName),

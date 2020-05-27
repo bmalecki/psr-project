@@ -34,6 +34,7 @@ Resources:
                 Action:
                   - "s3:PutObject"
                   - "s3:GetObject"
+                  - "s3:DeleteObject"
                 Resource:
                   Fn::Join:
                     - ""
@@ -43,6 +44,7 @@ Resources:
                 Action:
                   - "s3:PutObject"
                   - "s3:GetObject"
+                  - "s3:DeleteObject"
                 Resource:
                   - Fn::Join:
                       - ""
@@ -64,6 +66,7 @@ Resources:
               - Effect: "Allow"
                 Action:
                   - "dynamodb:PutItem"
+                  - "dynamodb:DeleteItem"
                   - "dynamodb:UpdateItem"
                   - "dynamodb:GetItem"
                 Resource:

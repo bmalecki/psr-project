@@ -1,11 +1,30 @@
 import React, { useContext } from 'react';
 import { DocumentsContext } from './context/DocumentsContextProvider';
+import { url, imagesUrl } from './environment'
 
 import "./Documents.css"
 
+async function deleteImageItem(id) {
+  const res = await fetch(`${url}/document/${id}`, {
+    method: "DELETE",
+  })
+
+  const status = await res.status
+  if (status !== 200) {
+    console.log("Error");
+  }
+}
+
 function Documents() {
-  const { state } = useContext(DocumentsContext);
+  const { state, dispatch } = useContext(DocumentsContext);
   const { documents } = state
+
+  const removeItem = async (event, id) => {
+    event.target.disabled = true;
+    dispatch({ type: "INCREASE_REFRESH_RATE" })
+    await deleteImageItem(id)
+    dispatch({ type: "DECREASE_REFRESH_RATE" })
+  }
 
   return (
     <div className="Documents">
@@ -13,6 +32,7 @@ function Documents() {
       <table>
         <tbody>
           <tr>
+            <th></th>
             <th>Id</th>
             <th>Name</th>
             <th>Image status</th>
@@ -23,7 +43,12 @@ function Documents() {
           {
             documents != null && documents.map(v =>
               <tr key={v["Id"]}>
-                <td>{v["Id"]}</td>
+                <td>
+                  <button onClick={(event) => removeItem(event, v["Id"])}>X</button>
+                </td>
+                <td>
+                  <a href={`${imagesUrl}/${v["Id"]}`} target="_blank" rel="noreferrer noopener">{v["Id"]}</a>
+                </td>
                 <td>{v["FileName"]}</td>
                 <td>{v["ImageStatus"]}</td>
                 <td>{v["InsertionDate"]}</td>
